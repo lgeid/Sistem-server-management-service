@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-TEKNISI - Sistem Manajemen Terpadu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9F1C;
+            --primary-glow: rgba(255, 159, 28, 0.25);
+            --dark: #0B0C10;
+            --dark-card: #14161F;
+            --dark-border: #232733;
+            --dark-hover: #1E222D;
+            --light: #F7F9FB;
+            --gray: #8C96A5;
+            --success: #00C853;
+            --warning: #FFAB00;
+            --info: #2979FF;
+            --danger: #FF5252;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 18px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Modifikasi Body dengan Background Transparan */
+        body { 
+            background: linear-gradient(rgba(11, 12, 16, 0.88), rgba(11, 12, 16, 0.88)), url('https://files.catbox.moe/oqg2hg.jpeg') center/cover fixed;
+            color: #ECEFF4; line-height: 1.6; overflow-x: hidden; transition: background 0.3s, color 0.3s;
+        }
+        .hidden { display: none !important; }
+
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at center, rgba(26,30,41,0.85) 0%, rgba(11,12,16,0.95) 100%);
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--dark-card); border: 1px solid var(--dark-border); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow); padding: 40px 28px; width: 100%; max-width: 400px; position: relative; overflow: hidden;
+        }
+        .login-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), #FF5252);
+        }
+        .login-logo { text-align: center; margin-bottom: 32px; }
+        .login-logo h1 { color: #fff; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .login-logo h1 i { color: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
+        .login-logo p { color: var(--gray); font-size: 13px; margin-top: 6px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #CFD8DC; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 16px; transition: var(--transition); }
+        input, select, textarea {
+            width: 100%; padding: 14px 16px 14px 48px; border: 2px solid var(--dark-border);
+            border-radius: var(--radius); font-size: 15px; transition: var(--transition);
+            background: #0B0C10; color: #fff;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--primary); background: #14161F; box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+        input:focus + i, .input-wrapper input:focus ~ i { color: var(--primary); }
+        textarea { padding-left: 16px; resize: vertical; min-height: 100px; }
+        
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 20px; border: none; border-radius: var(--radius);
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: var(--transition); text-decoration: none;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #E0890D); color: #0B0C10; width: 100%; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-warning { background: var(--warning); color: #0B0C10; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-info { background: var(--info); color: #fff; }
+        .btn-secondary { background: var(--dark-border); color: #fff; }
+        .btn-secondary:hover { background: #2E3445; }
+        .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); }
+        
+        .login-footer { text-align: center; margin-top: 24px; font-size: 12px; color: var(--gray); background: #0B0C10; padding: 10px; border-radius: var(--radius-sm); border: 1px dashed var(--dark-border); }
+
+        .app-container { display: flex; min-height: 100vh; position: relative; }
+        
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+            z-index: 95; opacity: 0; pointer-events: none; transition: var(--transition);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .sidebar {
+            width: 280px; background: var(--dark-card); border-right: 1px solid var(--dark-border);
+            padding: 24px 0; position: fixed; height: 100vh; overflow-y: auto; z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 0 24px 20px; border-bottom: 1px solid var(--dark-border); margin-bottom: 16px; }
+        .sidebar-logo h2 { color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .sidebar-logo h2 i { color: var(--primary); }
+        .sidebar-close-btn { background: none; border: none; color: var(--gray); font-size: 20px; cursor: pointer; display: none; }
+        
+        .sidebar-user { padding: 0 24px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--dark-border); margin-bottom: 16px; }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #FF5252); color: #0B0C10; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; box-shadow: 0 4px 10px var(--primary-glow); }
+        .user-info h4 { font-size: 15px; color: #fff; font-weight: 700; }
+        .user-info span { font-size: 12px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-top: 2px; }
+        
+        .sidebar-nav { list-style: none; padding: 0 16px; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+            color: var(--gray); text-decoration: none; border-radius: var(--radius);
+            margin-bottom: 6px; transition: var(--transition); font-weight: 600; font-size: 14px;
+        }
+        .sidebar-nav li a .nav-left { display: flex; align-items: center; gap: 14px; }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active {
+            background: var(--dark-hover); color: #fff; transform: translateX(4px);
+        }
+        .sidebar-nav li a.active { background: linear-gradient(135deg, rgba(255,159,28,0.15), rgba(255,159,28,0.05)); color: var(--primary); border-left: 4px solid var(--primary); }
+        .sidebar-nav li a i { font-size: 18px; width: 24px; text-align: center; }
+        
+        .nav-badge {
+            background: var(--danger); color: #fff; font-size: 11px; font-weight: 700;
+            padding: 2px 8px; border-radius: 10px; min-width: 20px; text-align: center;
+            box-shadow: 0 2px 6px rgba(255,82,82,0.4);
+        }
+
+        .main-content { margin-left: 280px; flex: 1; padding: 30px; min-height: 100vh; transition: var(--transition); }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; background: var(--dark-card); padding: 16px 24px; border-radius: var(--radius-lg); border: 1px solid var(--dark-border); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .top-bar-left { display: flex; align-items: center; gap: 16px; }
+        .menu-toggle-btn { background: var(--dark-hover); border: 1px solid var(--dark-border); color: #fff; width: 40px; height: 40px; border-radius: var(--radius-sm); display: none; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: var(--transition); }
+        .menu-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .theme-toggle-btn { background: var(--dark-hover); border: 1px solid var(--dark-border); color: #fff; width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: var(--transition); }
+        .theme-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        .back-nav-btn {
+            background: var(--dark-hover); border: 1px solid var(--dark-border); color: #fff;
+            padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: var(--transition);
+        }
+        .back-nav-btn:hover { background: #232733; border-color: var(--primary); color: var(--primary); }
+
+        .top-bar h1 { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+        .logout-btn { color: var(--danger); text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px; background: rgba(255,82,82,0.1); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px; transition: var(--transition); border: 1px solid rgba(255,82,82,0.2); }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        .card { background: var(--dark-card); border: 1px solid var(--dark-border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--dark-border); display: flex; align-items: center; gap: 12px; color: #fff; }
+        .card-title i { color: var(--primary); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-full { grid-column: 1 / -1; }
+
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--dark-border); background: #0B0C10; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 16px 18px; font-size: 14px; }
+        th { background: #14161F; font-weight: 700; color: #CFD8DC; border-bottom: 2px solid var(--dark-border); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        td { border-bottom: 1px solid var(--dark-border); color: #B0BEC5; }
+        tr:last-child td { border-bottom: none; }
+        tr.clickable-row { cursor: pointer; }
+        tr.clickable-row:hover td { background: rgba(255, 159, 28, 0.08); color: #fff; }
+
+        .badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-pending { background: rgba(255,171,0,0.15); color: #FFAB00; border: 1px solid rgba(255,171,0,0.3); }
+        .badge-ordered { background: rgba(41,121,255,0.15); color: #64B5F6; border: 1px solid rgba(41,121,255,0.3); }
+        .badge-visit { background: rgba(124,77,255,0.15); color: #B388FF; border: 1px solid rgba(124,77,255,0.3); }
+        .badge-closed { background: rgba(0,200,83,0.15); color: #69F0AE; border: 1px solid rgba(0,200,83,0.3); }
+
+        .chat-container { display: flex; flex-direction: column; height: 560px; border: 1px solid var(--dark-border); border-radius: var(--radius); overflow: hidden; background: #0B0C10; }
+        .chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .chat-msg { max-width: 78%; display: flex; flex-direction: column; position: relative; }
+        .chat-msg.mine { margin-left: auto; align-items: flex-end; }
+        .chat-msg.other { margin-right: auto; align-items: flex-start; }
+        .chat-bubble { padding: 14px 18px; border-radius: 16px; line-height: 1.5; color: #fff; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative; word-break: break-word; }
+        .chat-msg.mine .chat-bubble { background: var(--primary); color: #0B0C10; font-weight: 600; border-bottom-right-radius: 4px; }
+        .chat-msg.other .chat-bubble { background: var(--dark-card); border: 1px solid var(--dark-border); border-bottom-left-radius: 4px; }
+        .chat-meta { font-size: 11px; color: var(--gray); margin-top: 4px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .chat-delete-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 12px; opacity: 0.6; transition: var(--transition); padding: 2px 6px; border-radius: 4px; }
+        .chat-delete-btn:hover { opacity: 1; background: rgba(255,82,82,0.15); }
+        
+        .chat-input-area { display: flex; flex-direction: column; background: var(--dark-card); border-top: 1px solid var(--dark-border); }
+        .chat-toolbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--dark-border); background: #10121A; }
+        .chat-toolbar label { margin: 0; font-size: 12px; color: var(--gray); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--dark-hover); border-radius: var(--radius-sm); border: 1px solid var(--dark-border); transition: var(--transition); }
+        .chat-toolbar label:hover { border-color: var(--primary); color: #fff; }
+        .chat-main-input { display: flex; padding: 14px 16px; gap: 12px; align-items: center; }
+        .chat-main-input input[type="text"] { flex: 1; margin: 0; }
+
+        .attachment-preview { max-width: 180px; max-height: 180px; border-radius: 8px; margin-top: 8px; object-fit: cover; border: 1px solid var(--dark-border); display: block; }
+        .file-attachment-box { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.1); text-decoration: none; color: inherit; font-size: 13px; }
+        .file-attachment-box i { font-size: 18px; color: var(--primary); }
+
+        .alert { padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; display: flex; align-items: center; gap: 14px; font-weight: 600; animation: slideDown 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .alert-success { background: rgba(0,200,83,0.15); color: #69F0AE; border-left: 5px solid var(--success); border: 1px solid rgba(0,200,83,0.3); }
+        .alert-info { background: rgba(41,121,255,0.15); color: #64B5F6; border-left: 5px solid var(--info); border: 1px solid rgba(41,121,255,0.3); }
+        .alert-warning { background: rgba(255,171,0,0.15); color: #FFD54F; border-left: 5px solid var(--warning); border: 1px solid rgba(255,171,0,0.3); }
+        .alert-danger { background: rgba(255,82,82,0.15); color: #FF8A80; border-left: 5px solid var(--danger); border: 1px solid rgba(255,82,82,0.3); }
+
+        /* SPLASH SCREEN CSS */
+        #splash-screen {
+            position: fixed; inset: 0; background: rgba(11, 12, 16, 0.95); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease; backdrop-filter: blur(10px);
+        }
+        .splash-content { text-align: center; }
+        .splash-content img { max-width: 280px; animation: bounce 2s infinite ease-in-out; margin-bottom: 25px; filter: drop-shadow(0 10px 20px rgba(255, 159, 28, 0.4)); }
+        .splash-content h2 { color: var(--primary); font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+        .loading-spinner {
+            width: 45px; height: 45px; border: 4px solid rgba(255,159,28,0.2);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 15px auto;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* LIGHT MODE VARIABLES & OVERRIDES */
+        body.light-mode {
+            background: linear-gradient(rgba(247, 249, 251, 0.92), rgba(247, 249, 251, 0.92)), url('https://files.catbox.moe/oqg2hg.jpeg') center/cover fixed;
+            color: #2D3748;
+            --dark-card: #FFFFFF;
+            --dark-border: #E2E8F0;
+            --dark-hover: #EDF2F7;
+        }
+        body.light-mode .login-wrapper { background: radial-gradient(circle at center, rgba(240,244,248,0.85) 0%, rgba(226,232,240,0.95) 100%); }
+        body.light-mode .login-card, body.light-mode .card, body.light-mode .top-bar, body.light-mode .sidebar {
+            background: var(--dark-card); box-shadow: 0 4px 25px rgba(0,0,0,0.05); border-color: var(--dark-border);
+        }
+        body.light-mode h1, body.light-mode h2, body.light-mode h3, body.light-mode h4, body.light-mode .card-title { color: #1A202C; }
+        body.light-mode .login-logo p, body.light-mode label, body.light-mode th { color: #718096; }
+        body.light-mode input, body.light-mode select, body.light-mode textarea { background: #FFFFFF; color: #2D3748; border-color: var(--dark-border); }
+        body.light-mode input:focus, body.light-mode select:focus, body.light-mode textarea:focus { background: #FFFFFF; border-color: var(--primary); }
+        body.light-mode .table-wrapper { background: #FFFFFF; border-color: var(--dark-border); }
+        body.light-mode th { background: #F7FAFC; }
+        body.light-mode td { color: #4A5568; border-bottom: 1px solid var(--dark-border); }
+        body.light-mode tr.clickable-row:hover td { background: rgba(255, 159, 28, 0.1); color: #1A202C; }
+        body.light-mode .chat-container { background: #FFFFFF; border-color: var(--dark-border); }
+        body.light-mode .chat-toolbar { background: #F7FAFC; border-color: var(--dark-border); }
+        body.light-mode .chat-msg.other .chat-bubble { background: #F7FAFC; color: #2D3748; border-color: var(--dark-border); }
+        body.light-mode .login-footer { background: #F7FAFC; border-color: #CBD5E0; color: #4A5568; }
+        body.light-mode .menu-toggle-btn, body.light-mode .back-nav-btn, body.light-mode .theme-toggle-btn { color: #4A5568; }
+        body.light-mode .sidebar-nav li a { color: #4A5568; }
+        body.light-mode .sidebar-nav li a:hover { background: var(--dark-hover); color: #1A202C; }
+        body.light-mode .sidebar-nav li a.active { color: var(--primary); }
+        body.light-mode .alert { background: #FFFFFF; }
+        body.light-mode #splash-screen { background: rgba(247, 249, 251, 0.95); }
+
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-close-btn { display: block; }
+            .main-content { margin-left: 0; padding: 20px 16px; }
+            .menu-toggle-btn { display: flex; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 576px) {
+            .top-bar { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen" class="hidden">
+    <div class="splash-content">
+        <img src="https://files.catbox.moe/qn14a1.png" alt="My-TEKNISI Splash">
+        <div class="loading-spinner"></div>
+        <h2>Menyiapkan Workspace...</h2>
+    </div>
+</div>
+
+<div id="page-login" class="login-wrapper">
+    <div class="login-card">
+        <div class="login-logo">
+            <h1><i class="fas fa-bolt"></i> My Teknisi</h1>
+            <p>Sistem Manajemen Servis</p>
+        </div>
+        <div class="form-group">
+            <label>Username</label>
+            <div class="input-wrapper">
+                <input type="text" id="login-user" placeholder="Masukkan username">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="login-pass" placeholder="Masukkan password">
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="login()">
+            <i class="fas fa-sign-in-alt"></i> Masuk ke Sistem
+        </button>
+        <div class="login-footer">
+            <p><strong>SELAMAT BEKERJA DAN TERUSLAH BAHAGIA 🫰</strong></p>
+        </div>
+        <h2 style="font-size:12px; margin-top:20px; color:var(--gray); text-align:center;"><i class="fas fa-bolt"></i> "KEJARLAH DUNIA MAKA DUNIA AKAN MEMBUNUHMU"</h2>
+    </div>
+</div>
+
+<div id="page-main" class="app-container hidden">
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <h2><i class="fas fa-bolt"></i>MY-TEKNISI</h2>
+            </div>
+            <button class="sidebar-close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar" id="user-avatar"></div>
+            <div class="user-info">
+                <h4 id="user-name"></h4>
+                <span id="user-role"></span>
+            </div>
+        </div>
+        <ul class="sidebar-nav" id="sidebar-nav"></ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <button class="theme-toggle-btn" onclick="toggleTheme()" title="Ganti Tema Gelap/Terang"><i id="theme-icon" class="fas fa-sun"></i></button>
+                <button class="back-nav-btn" onclick="goBack()" id="back-btn" title="Kembali ke halaman sebelumnya">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </button>
+                <h1 id="page-title">Dashboard</h1>
+            </div>
+            <a href="#" class="logout-btn" onclick="logout(); return false;">
+                <i class="fas fa-sign-out-alt"></i> <span>Keluar</span>
+            </a>
+        </div>
+        <div id="alert-area"></div>
+        <div id="content-area"></div>
+    </main>
+</div>
+
+<script>
+const API_URL = 'http://20.219.4.22:9993/api/data';
+let serverData = { users: [], customers: [], inventory: [], chat: [] };
+let currentUser = null;
+let pageHistory = [];
+let currentPage = 'dashboard';
+let activeReportId = null;
+let chatAttachmentsPending = null;
+
+function initTheme() {
+    if (localStorage.getItem('mytek-theme') === 'light') {
+        document.body.classList.add('light-mode');
+    }
+    updateThemeIcon();
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('mytek-theme', isLight ? 'light' : 'dark');
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const isLight = document.body.classList.contains('light-mode');
+    const icon = document.getElementById('theme-icon');
+    if (icon) {
+        icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+    }
+}
+
+async function initApp() {
+    try {
+        const res = await fetch(API_URL);
+        if (res.ok) {
+            serverData = await res.json();
+        }
+    } catch (err) {
+        console.error('Gagal terhubung ke server backend:', err);
+    }
+
+    if (!serverData.users || serverData.users.length === 0) {
+        serverData.users = [
+            { id: 'admin', username: 'admin', password: 'admin123', role: 'admin', nama: 'Administrator Utama', nowa: '', mustChangePass: false }
+        ];
+        serverData.customers = serverData.customers || [];
+        serverData.inventory = serverData.inventory || [];
+        serverData.chat = serverData.chat || [];
+        await saveServerDataCompletely();
+    }
+}
+
+async function saveServerDataCompletely() {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(serverData)
+        });
+        renderSidebar();
+    } catch (err) {
+        console.error('Gagal menyimpan data ke server:', err);
+        showAlert('Gagal menyinkronkan data ke server!', 'danger');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initTheme);
+initApp();
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function generateNoLaporan() {
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const random4 = Math.floor(1000 + Math.random() * 9000);
+    return `RNP${yy}${mm}${dd}${random4}`;
+}
+
+function saveData(k, v) { 
+    if (k === 'lgcs_users') serverData.users = v;
+    if (k === 'lgcs_customers') serverData.customers = v;
+    if (k === 'lgcs_inventory') serverData.inventory = v;
+    if (k === 'lgcs_chat') serverData.chat = v;
+    saveServerDataCompletely(); 
+}
+
+function loadData(k) { 
+    if (k === 'lgcs_users') return serverData.users || [];
+    if (k === 'lgcs_customers') return serverData.customers || [];
+    if (k === 'lgcs_inventory') return serverData.inventory || [];
+    if (k === 'lgcs_chat') return serverData.chat || [];
+    return [];
+}
+
+function showAlert(msg, type='info') {
+    const area = document.getElementById('alert-area');
+    const el = document.createElement('div');
+    el.className = `alert alert-${type}`;
+    const icons = { success: 'fa-check-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle', danger: 'fa-times-circle' };
+    el.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+    area.prepend(el);
+    setTimeout(() => el.remove(), 4000);
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+}
+
+async function login() {
+    await initApp();
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value.trim();
+    const users = loadData('lgcs_users');
+    const found = users.find(x => x.username === u && x.password === p);
+    if (!found) return showAlert('Username atau password salah!', 'warning');
+    
+    currentUser = found;
+    document.getElementById('page-login').classList.add('hidden');
+    
+    // Tampilkan Splash Screen Animasi
+    const splash = document.getElementById('splash-screen');
+    splash.classList.remove('hidden');
+    splash.style.opacity = '1';
+
+    // Set Data di Latar Belakang
+    document.getElementById('user-avatar').textContent = found.nama.charAt(0).toUpperCase();
+    document.getElementById('user-name').textContent = found.nama;
+    document.getElementById('user-role').textContent = found.role === 'admin' ? 'Administrator' : 'Teknisi Lapangan';
+    
+    renderSidebar();
+    
+    if (currentUser.role === 'teknisi' && currentUser.mustChangePass) {
+        pageHistory = ['change_password'];
+        routePage('change_password', false);
+    } else {
+        pageHistory = ['dashboard'];
+        routePage('dashboard', false);
+    }
+
+    // Hilangkan Splash Screen Setelah Beberapa Detik
+    setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.classList.add('hidden');
+            document.getElementById('page-main').classList.remove('hidden');
+            if (currentUser.role === 'teknisi' && currentUser.mustChangePass) {
+                showAlert('⚠️ Anda login untuk pertama kali. Harap ubah sandi awal Anda.', 'warning');
+            }
+        }, 500); // Waktu transisi fade out
+    }, 2500); // Waktu loading splash
+}
+
+function logout() {
+    currentUser = null;
+    pageHistory = [];
+    activeReportId = null;
+    document.getElementById('page-login').classList.remove('hidden');
+    document.getElementById('page-main').classList.add('hidden');
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+}
+
+function getUnreadCounts(id) {
+    const chatMsgs = loadData('lgcs_chat');
+    const reports = loadData('lgcs_customers');
+    const inventory = loadData('lgcs_inventory');
+    let unreadChat = 0, pendingReports = 0, pendingReturns = 0;
+    if (currentUser.role === 'admin') {
+        unreadChat = chatMsgs.filter(m => !m.readByAdmin).length;
+        pendingReports = reports.filter(r => r.status === 'pending-part' || r.status === 'part-order').length;
+        pendingReturns = inventory.filter(i => i.pendingReturn).length;
+    } else {
+        unreadChat = chatMsgs.filter(m => m.recipientId === currentUser.id && !m.readByTech).length;
+        pendingReports = reports.filter(r => r.teknisiId === currentUser.id && r.status !== 'closed').length;
+    }
+    return { unreadChat, pendingReports, pendingReturns };
+}
+
+function renderSidebar() {
+    if (!currentUser) return;
+    const nav = document.getElementById('sidebar-nav');
+    const counts = getUnreadCounts(currentUser.id);
+    let items = [];
+
+    if (currentUser.role === 'admin') {
+        items = [
+            { id: 'dashboard', icon: 'fa-chart-pie', label: 'Dashboard', badge: 0 },
+            { id: 'search_service', icon: 'fa-magnifying-glass', label: 'Sejarah Servis', badge: 0 },
+            { id: 'search_sparepart', icon: 'fa-search-dollar', label: 'Pencarian Spare Part', badge: 0 },
+            { id: 'add_customer', icon: 'fa-user-plus', label: 'Tambah Data Customer', badge: 0 },
+            { id: 'report_list', icon: 'fa-table-list', label: 'Daftar Seluruh Laporan', badge: counts.pendingReports },
+            { id: 'techs', icon: 'fa-user-cog', label: 'Manajemen Akun Teknisi', badge: 0 },
+            { id: 'inventory', icon: 'fa-boxes-stacked', label: 'Inventory Spare Part', badge: counts.pendingReturns },
+            { id: 'chat', icon: 'fa-comments', label: 'Pesan & Komunikasi Tim', badge: counts.unreadChat }
+        ];
+    } else {
+        if (currentUser.mustChangePass) {
+            items = [{ id: 'change_password', icon: 'fa-key', label: 'Ubah Sandi Baru', badge: 0 }];
+        } else {
+            items = [
+                { id: 'dashboard', icon: 'fa-chart-pie', label: 'Dashboard', badge: 0 },
+                { id: 'search_service', icon: 'fa-magnifying-glass', label: 'Sejarah Servis', badge: 0 },
+                { id: 'search_sparepart', icon: 'fa-search-dollar', label: 'Pencarian Spare Part', badge: 0 },
+                { id: 'add_customer', icon: 'fa-file-circle-plus', label: 'Buat Laporan Servis', badge: 0 },
+                { id: 'report_list', icon: 'fa-table-list', label: 'Daftar Seluruh Laporan', badge: counts.pendingReports },
+                { id: 'inventory', icon: 'fa-toolbox', label: 'Part Saya', badge: 0 },
+                { id: 'chat', icon: 'fa-comments', label: 'Pesan & Komunikasi Tim', badge: counts.unreadChat },
+                { id: 'change_password', icon: 'fa-key', label: 'Ubah Sandi', badge: 0 }
+            ];
+        }
+    }
+    
+    nav.innerHTML = items.map(i => `
+        <li>
+            <a href="#" onclick="navigateTo('${i.id}'); return false;" id="nav-${i.id}">
+                <div class="nav-left">
+                    <i class="fas ${i.icon}"></i>
+                    <span>${i.label}</span>
+                </div>
+                ${i.badge > 0 ? `<span class="nav-badge">${i.badge}</span>` : ''}
+            </a>
+        </li>
+    `).join('');
+}
+
+async function navigateTo(pg) {
+    await initApp();
+    if (currentUser.role === 'teknisi' && currentUser.mustChangePass && pg !== 'change_password') {
+        showAlert('Harap selesaikan penggantian sandi awal terlebih dahulu.', 'warning');
+        return;
+    }
+    if (currentPage !== pg) {
+        pageHistory.push(pg);
+        routePage(pg, true);
+    }
+    if (window.innerWidth <= 992) {
+        document.getElementById('sidebar').classList.remove('mobile-open');
+        document.getElementById('sidebar-overlay').classList.remove('active');
+    }
+}
+
+async function goBack() {
+    await initApp();
+    if (currentUser.role === 'teknisi' && currentUser.mustChangePass) return;
+    if (pageHistory.length > 1) {
+        pageHistory.pop();
+        routePage(pageHistory[pageHistory.length - 1], false);
+    } else {
+        showAlert('Sudah berada di halaman awal sesi.', 'info');
+    }
+}
+
+function routePage(pg, pushHistory = true) {
+    if (pushHistory && pageHistory[pageHistory.length - 1] !== pg) {
+        pageHistory.push(pg);
+    }
+    currentPage = pg;
+    
+    const backBtn = document.getElementById('back-btn');
+    if (pageHistory.length <= 1 || (currentUser.role === 'teknisi' && currentUser.mustChangePass)) {
+        backBtn.style.opacity = '0.5'; backBtn.style.pointerEvents = 'none';
+    } else {
+        backBtn.style.opacity = '1'; backBtn.style.pointerEvents = 'auto';
+    }
+
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById(`nav-${pg}`)?.classList.add('active');
+    
+    const titles = {
+        dashboard: 'Dashboard Ringkasan',
+        search_service: 'Pencarian Sejarah Servis',
+        search_sparepart: 'Pencarian Global Spare Part',
+        add_customer: currentUser.role==='admin' ? 'Tambah Data Customer Baru' : 'Buat Laporan Servis Pelanggan',
+        report_list: 'Daftar Seluruh Laporan Servis',
+        report_detail: 'Detail & Update Laporan Servis',
+        techs: 'Manajemen Akun Teknisi',
+        inventory: 'Manajemen Spare Part Gudang',
+        chat: 'Pesan & Komunikasi Tim',
+        change_password: 'Ubah Sandi Baru Akun'
+    };
+    document.getElementById('page-title').textContent = titles[pg] || pg;
+    
+    const cont = document.getElementById('content-area');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    switch(pg) {
+        case 'dashboard': renderDashboard(cont); break;
+        case 'search_service': renderSearchService(cont); break;
+        case 'search_sparepart': renderSearchSparePart(cont); break;
+        case 'add_customer': renderAddCustomer(cont); break;
+        case 'report_list': renderReportList(cont); break;
+        case 'report_detail': renderReportDetail(cont, activeReportId); break;
+        case 'techs': ifAdmin(cont, renderTechPage); break;
+        case 'inventory': renderInventory(cont); break;
+        case 'chat': markChatsAsRead(); renderChat(cont); break;
+        case 'change_password': renderChangePassword(cont); break;
+        default: cont.innerHTML = `<div class="card"><h3>Halaman tidak ditemukan</h3></div>`;
+    }
+}
+
+function markChatsAsRead() {
+    let msgs = loadData('lgcs_chat');
+    let updated = false;
+    msgs.forEach(m => {
+        if (currentUser.role === 'admin' && !m.readByAdmin) { m.readByAdmin = true; updated = true; } 
+        else if (currentUser.role === 'teknisi' && m.recipientId === currentUser.id && !m.readByTech) { m.readByTech = true; updated = true; }
+    });
+    if (updated) { saveData('lgcs_chat', msgs); renderSidebar(); }
+}
+
+function ifAdmin(cont, fn) {
+    if (currentUser.role !== 'admin') {
+        cont.innerHTML = `<div class="card"><h3><i class="fas fa-lock"></i> Akses Ditolak</h3><p style="color:var(--gray);">Hanya Administrator yang dapat mengakses halaman manajemen ini.</p></div>`;
+        return;
+    }
+    fn(cont);
+}
+
+function statusBadge(s) {
+    const map = {
+        'pending-part': ['badge-pending', 'fa-clock', 'Pending Part'],
+        'part-order': ['badge-ordered', 'fa-truck-fast', 'Part Dipesan'],
+        'visit-1': ['badge-visit', 'fa-calendar-day', 'Kunjungan 1'],
+        'visit-2': ['badge-visit', 'fa-calendar-week', 'Kunjungan 2'],
+        'visit-3': ['badge-visit', 'fa-calendar-check', 'Kunjungan 3'],
+        'closed': ['badge-closed', 'fa-circle-check', 'Selesai']
+    };
+    const [cls, icon, lbl] = map[s] || ['', 'fa-question', s];
+    return `<span class="badge ${cls}"><i class="fas ${icon}"></i>${lbl}</span>`;
+}
+
+function getTechName(id) {
+    if (!id || id === 'admin') return '🏢 Inventaris Pusat';
+    const u = loadData('lgcs_users').find(x => x.id === id);
+    return u ? `👤 ${u.nama}` : 'Tidak diketahui';
+}
+function getTechOptions() {
+    return `<option value="">-- Pilih Teknisi --</option>` + loadData('lgcs_users').filter(u => u.role === 'teknisi').map(u => `<option value="${u.id}">${u.nama}</option>`).join('');
+}
+
+function renderDashboard(cont) {
+    const cust = loadData('lgcs_customers');
+    const myCust = currentUser.role === 'admin' ? cust : cust.filter(c => c.teknisiId === currentUser.id && c.status !== 'closed');
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-list-check"></i> Laporan Servis Terbaru</h3>
+            ${myCust.length === 0 ? '<p style="text-align:center; padding:30px; color:var(--gray);">Belum ada data laporan yang tersedia.</p>' : `
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>No. Laporan</th><th>Nama Customer</th><th>Model Produk</th><th>Status</th><th>Teknisi</th></tr></thead>
+                    <tbody>
+                    ${myCust.slice(-5).reverse().map(c => `
+                        <tr class="clickable-row" onclick="openReportDetail('${c.id}')">
+                            <td><code>${c.noLaporan || '-'}</code></td>
+                            <td><strong>${c.namaCustomer}</strong><br><small style="color:var(--gray)">${c.noHP}</small></td>
+                            <td>${c.model}<br><small style="color:var(--gray)">${c.noSeri}</small></td>
+                            <td>${statusBadge(c.status||'pending-part')}</td>
+                            <td>${getTechName(c.teknisiId)}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>`}
+        </div>
+    `;
+}
+
+function renderSearchService(cont) {
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-magnifying-glass"></i> Cari Sejarah Servis</h3>
+            <div class="form-grid" style="margin-bottom:20px;">
+                <div class="form-group form-full">
+                    <label>Pencarian Berdasarkan (No. HP / No. Seri / No. Laporan)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="search-keyword" placeholder="Masukkan Nomor HP, No. Seri, atau No. Laporan..." oninput="executeSearch()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>No. Laporan</th><th>Nama Customer</th><th>No. HP</th><th>Model & No. Seri</th><th>Status</th><th>Teknisi</th><th>Tanggal</th></tr></thead>
+                    <tbody id="search-result-list">
+                        <tr><td colspan="7" style="text-align:center; color:var(--gray); padding:30px;">Masukkan kata kunci pencarian di atas.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function executeSearch() {
+    const keyword = document.getElementById('search-keyword').value.toLowerCase().trim();
+    const tbody = document.getElementById('search-result-list');
+    if (!tbody) return;
+    if (!keyword) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--gray); padding:30px;">Masukkan kata kunci pencarian di atas.</td></tr>`;
+        return;
+    }
+    const filtered = loadData('lgcs_customers').filter(c => {
+        return (c.noHP || '').toLowerCase().includes(keyword) || (c.noSeri || '').toLowerCase().includes(keyword) || (c.noLaporan || '').toLowerCase().includes(keyword);
+    });
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--gray); padding:30px;">Tidak ditemukan data.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = filtered.map(c => `
+        <tr class="clickable-row" onclick="openReportDetail('${c.id}')">
+            <td><code>${c.noLaporan || '-'}</code></td><td><strong>${c.namaCustomer}</strong></td><td>${c.noHP}</td>
+            <td>${c.model}<br><small style="color:var(--gray)">${c.noSeri}</small></td>
+            <td>${statusBadge(c.status || 'pending-part')}</td><td>${getTechName(c.teknisiId)}</td><td>${c.tglBeli || '-'}</td>
+        </tr>`).join('');
+}
+
+function renderSearchSparePart(cont) {
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-search-dollar"></i> Pencarian Global Spare Part</h3>
+            <div class="form-grid" style="margin-bottom:20px;">
+                <div class="form-group form-full">
+                    <label>Cari Berdasarkan Nama Part, Nomor Part / Seri, atau Keterangan</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="search-part-keyword" placeholder="Contoh: AGF789, PCB, atau Lokasi Rak..." oninput="executeGlobalPartSearch()">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Nama Part / Kode</th><th>Stok Tersedia</th><th>Harga Satuan</th><th>Lokasi / Pemilik Stok</th><th>Keterangan</th></tr></thead>
+                    <tbody id="global-part-result-list">
+                        <tr><td colspan="5" style="text-align:center; color:var(--gray); padding:30px;">Ketik kata kunci atau nomor part untuk mencari stok.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function executeGlobalPartSearch() {
+    const keyword = document.getElementById('search-part-keyword').value.toLowerCase().trim();
+    const tbody = document.getElementById('global-part-result-list');
+    if (!tbody) return;
+    if (!keyword) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--gray); padding:30px;">Ketik kata kunci pencarian.</td></tr>`;
+        return;
+    }
+    const filtered = loadData('lgcs_inventory').filter(p => p.qty > 0 && !p.pendingReturn && ((p.namaPart || '').toLowerCase().includes(keyword) || (p.keterangan || '').toLowerCase().includes(keyword)));
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--gray); padding:30px;">Spare part tidak ditemukan.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = filtered.map(p => `
+        <tr>
+            <td><strong>${p.namaPart}</strong></td><td><strong style="color:var(--primary);">${p.qty} unit</strong></td>
+            <td>Rp ${(p.harga || 0).toLocaleString('id-ID')}</td><td>${getTechName(p.ownerId)}</td><td>${p.keterangan || '-'}</td>
+        </tr>`).join('');
+}
+
+function renderAddCustomer(cont) {
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-plus-circle"></i> ${currentUser.role==='admin' ? 'Formulir Tambah Data Customer' : 'Buat Laporan Servis Baru'}</h3>
+            <form id="cust-form">
+                <input type="hidden" id="cust-id">
+                <div class="form-grid">
+                    <div class="form-group form-full">
+                        <label>Nomor Laporan Otomatis</label>
+                        <div class="input-wrapper"><input type="text" id="cust-nolaporan" readonly style="color:var(--primary); font-weight:bold;"><i class="fas fa-barcode"></i></div>
+                    </div>
+                    <div class="form-group"><label>Nama Customer</label><div class="input-wrapper"><input type="text" id="cust-nama" placeholder="Nama lengkap pelanggan" required><i class="fas fa-user-tag"></i></div></div>
+                    <div class="form-group"><label>No. HP / WhatsApp</label><div class="input-wrapper"><input type="tel" id="cust-hp" placeholder="08xxxxxxxxxx" required><i class="fas fa-phone"></i></div></div>
+                    <div class="form-group form-full"><label>Alamat Lengkap</label><div class="input-wrapper"><input type="text" id="cust-alamat" placeholder="Alamat lokasi pengerjaan" required><i class="fas fa-location-dot"></i></div></div>
+                    <div class="form-group"><label>Model Produk</label><div class="input-wrapper"><input type="text" id="cust-model" placeholder="Contoh: Mesin Cuci / AC" required><i class="fas fa-tv"></i></div></div>
+                    <div class="form-group"><label>Nomor Seri / No Part</label><div class="input-wrapper"><input type="text" id="cust-serial" placeholder="Nomor seri unit atau part" required><i class="fas fa-barcode"></i></div></div>
+                    <div class="form-group"><label>Tanggal Input Otomatis</label><div class="input-wrapper"><input type="date" id="cust-tgl" required><i class="fas fa-calendar"></i></div></div>
+                    <div class="form-group"><label>Status Garansi</label><div class="input-wrapper"><select id="cust-garansi"><option value="ya">✅ Masih Dalam Garansi</option><option value="tidak">❌ Luar Garansi</option></select><i class="fas fa-shield-halved"></i></div></div>
+                    ${currentUser.role==='admin' ? `<div class="form-group form-full"><label>Tugaskan ke Teknisi</label><div class="input-wrapper"><select id="cust-teknisi">${getTechOptions()}</select><i class="fas fa-user-gear"></i></div></div>` : ''}
+                    <div class="form-group form-full"><label>Keterangan Keluhan / Masalah</label><textarea id="cust-keluhan" placeholder="Jelaskan kendala secara detail..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;"><i class="fas fa-floppy-disk"></i> Simpan Data Laporan</button>
+            </form>
+        </div>
+    `;
+    document.getElementById('cust-nolaporan').value = generateNoLaporan();
+    document.getElementById('cust-tgl').valueAsDate = new Date();
+    document.getElementById('cust-form').addEventListener('submit', saveCustomer);
+}
+
+function saveCustomer(e) {
+    e.preventDefault();
+    let data = loadData('lgcs_customers');
+    data.push({
+        id: genId(), noLaporan: document.getElementById('cust-nolaporan').value.trim() || generateNoLaporan(),
+        namaCustomer: document.getElementById('cust-nama').value.trim(), alamat: document.getElementById('cust-alamat').value.trim(),
+        noHP: document.getElementById('cust-hp').value.trim(), model: document.getElementById('cust-model').value.trim(),
+        noSeri: document.getElementById('cust-serial').value.trim(), tglBeli: document.getElementById('cust-tgl').value,
+        garansi: document.getElementById('cust-garansi').value, keluhan: document.getElementById('cust-keluhan').value.trim(),
+        status: 'pending-part', teknisiId: currentUser.role==='admin' ? document.getElementById('cust-teknisi')?.value : currentUser.id,
+        updatedAt: new Date().toISOString()
+    });
+    saveData('lgcs_customers', data);
+    showAlert('✅ Data laporan berhasil disimpan!', 'success');
+    navigateTo('report_list');
+}
+
+function renderReportList(cont) {
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-table-list"></i> Daftar Seluruh Laporan Servis</h3>
+            <div class="form-grid" style="margin-bottom:20px;">
+                <div class="form-group" style="margin-bottom:0;"><label>Filter Berdasarkan Tanggal</label><div class="input-wrapper"><input type="date" id="filter-date" onchange="renderCustomerListTable()"><i class="fas fa-calendar-days"></i></div></div>
+                <div class="form-group" style="margin-bottom:0; display:flex; align-items:flex-end;"><button class="btn btn-secondary btn-sm" onclick="document.getElementById('filter-date').value=''; renderCustomerListTable();"><i class="fas fa-rotate-right"></i> Reset Filter</button></div>
+            </div>
+            <div class="table-wrapper"><table><thead><tr><th>No. Laporan</th><th>Nama</th><th>Produk</th><th>Garansi</th><th>Status</th><th>Teknisi</th><th>Aksi</th></tr></thead><tbody id="cust-list"></tbody></table></div>
+        </div>
+    `;
+    renderCustomerListTable();
+}
+
+function renderCustomerListTable() {
+    const list = document.getElementById('cust-list');
+    if (!list) return;
+    let data = loadData('lgcs_customers');
+    if (currentUser.role !== 'admin') data = data.filter(c => c.teknisiId === currentUser.id);
+    const filterDateVal = document.getElementById('filter-date')?.value;
+    if (filterDateVal) data = data.filter(c => c.tglBeli === filterDateVal);
+
+    if (data.length === 0) return list.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--gray)">Belum ada data laporan yang sesuai.</td></tr>`;
+    list.innerHTML = data.map(c => `
+        <tr class="clickable-row" onclick="openReportDetail('${c.id}')">
+            <td><code>${c.noLaporan || '-'}</code></td>
+            <td><strong>${c.namaCustomer}</strong><br><small style="color:var(--gray)">${c.noHP}</small></td>
+            <td>${c.model}<br><small style="color:var(--gray)">${c.noSeri}</small></td>
+            <td>${c.garansi==='ya' ? '<span style="color:var(--success)">✅ Ya</span>' : '<span style="color:var(--danger)">❌ Tidak</span>'}</td>
+            <td>${statusBadge(c.status||'pending-part')}</td><td>${getTechName(c.teknisiId)}</td>
+            <td onclick="event.stopPropagation()">
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-info btn-sm" onclick="openReportDetail('${c.id}')" title="Detail & Update"><i class="fas fa-pen-to-square"></i></button>
+                    ${currentUser.role==='admin' ? `<button class="btn btn-danger btn-sm" onclick="delCustomer('${c.id}')" title="Hapus"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+            </td>
+        </tr>`).join('');
+}
+
+function openReportDetail(id) {
+    if (currentUser.role === 'teknisi' && currentUser.mustChangePass) return;
+    activeReportId = id; navigateTo('report_detail');
+}
+
+function delCustomer(id) {
+    if (!confirm('Yakin ingin menghapus data laporan ini?')) return;
+    saveData('lgcs_customers', loadData('lgcs_customers').filter(x => x.id !== id));
+    renderCustomerListTable();
+    showAlert('🗑️ Data laporan telah dihapus', 'info');
+}
+
+function renderReportDetail(cont, id) {
+    const c = loadData('lgcs_customers').find(x => x.id === id);
+    if (!c) return cont.innerHTML = `<div class="card"><h3>Laporan tidak ditemukan.</h3></div>`;
+    const techId = c.teknisiId || currentUser.id;
+
+    cont.innerHTML = `
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--dark-border);">
+                <div>
+                    <h3 style="font-size:20px; font-weight:800; display:flex; align-items:center; gap:10px;"><i class="fas fa-file-invoice" style="color:var(--primary);"></i> ${c.namaCustomer} <code style="font-size:14px; background:var(--dark-border); padding:2px 8px; border-radius:4px; color:var(--primary);">${c.noLaporan || '-'}</code></h3>
+                    <p style="font-size:14px; color:var(--gray); margin-top:4px;">No. HP: <strong>${c.noHP}</strong> | Alamat: ${c.alamat}</p>
+                    <p style="font-size:14px; color:var(--gray); margin-top:2px;">Model: <strong>${c.model}</strong> (${c.noSeri}) | Garansi: ${c.garansi==='ya'?'✅ Ya':'❌ Tidak'}</p>
+                    <p style="font-size:14px; color:var(--gray); margin-top:2px;">Teknisi Ditugaskan: <strong>${getTechName(c.teknisiId)}</strong></p>
+                </div>
+                <div>${statusBadge(c.status || 'pending-part')}</div>
+            </div>
+
+            <div style="background:var(--dark-hover); padding:16px; border-radius:var(--radius); border:1px solid var(--dark-border); margin-bottom:24px;">
+                <h4 style="font-size:13px; text-transform:uppercase; color:var(--primary); margin-bottom:6px; font-weight:700;">Keluhan Pelanggan:</h4>
+                <p style="font-size:14px; line-height:1.5;">${c.keluhan || 'Tidak ada keterangan keluhan.'}</p>
+            </div>
+
+            <h3 class="card-title"><i class="fas fa-pen-to-square"></i> Perbarui Status & Rincian Perbaikan</h3>
+            <form onsubmit="saveReportUpdate(event, '${c.id}')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Status Pengerjaan</label>
+                        <div class="input-wrapper">
+                            <select id="status-${c.id}" onchange="toggleCloseCost('${c.id}')" required>
+                                <option value="pending-part" ${c.status==='pending-part'?'selected':''}>⏳ Pending Part</option>
+                                <option value="part-order" ${c.status==='part-order'?'selected':''}>📦 Part Telah Dipesan</option>
+                                <option value="visit-1" ${c.status==='visit-1'?'selected':''}>🏠 Kunjungan 1</option>
+                                <option value="visit-2" ${c.status==='visit-2'?'selected':''}>🏠 Kunjungan 2</option>
+                                <option value="visit-3" ${c.status==='visit-3'?'selected':''}>🏠 Kunjungan 3</option>
+                                <option value="closed" ${c.status==='closed'?'selected':''}>✅ Selesai / Close</option>
+                            </select>
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Lampirkan Foto Pengecekan</label><div class="input-wrapper"><input type="file" id="photos-${c.id}" accept="image/*" multiple style="padding-left:16px;"></div></div>
+                    <div class="form-group form-full"><label>Catatan Hasil Perbaikan / Pengecekan</label><textarea id="notes-${c.id}" placeholder="Tuliskan detail hasil pengecekan atau tindakan perbaikan...">${c.latestNotes || ''}</textarea></div>
+                </div>
+
+                ${c.photos && c.photos.length > 0 ? `<div style="margin-bottom:20px;"><label style="margin-bottom:8px;">Foto Bukti Tersimpan:</label><div style="display:flex; gap:10px; flex-wrap:wrap;">${c.photos.map(p => `<img src="${p}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--dark-border);">`).join('')}</div></div>` : ''}
+
+                <div id="cost-section-${c.id}" class="${c.status === 'closed' ? '' : 'hidden'}" style="margin-top:16px; padding-top:16px; border-top:1px dashed var(--dark-border);">
+                    <h4 style="font-size:14px; color:var(--primary); margin-bottom:12px;"><i class="fas fa-receipt"></i> Rincian Biaya & PPN 11%</h4>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fas fa-toolbox" style="color:var(--primary);"></i> Daftar Inventaris Teknisi (Pilih Part yang Digunakan)</label>
+                        <div class="table-wrapper" style="max-height:220px; overflow-y:auto;">
+                            <table style="font-size:13px;">
+                               <thead><tr><th>Nama Part</th><th>Stok Tersedia</th><th>Harga Satuan</th><th style="width:130px;">Jumlah Dipakai</th></tr></thead>
+                                <tbody>
+                                    ${(() => {
+                                        const techParts = loadData('lgcs_inventory').filter(p => p.ownerId === techId && p.qty > 0 && !p.pendingReturn);
+                                        if (techParts.length === 0) return `<tr><td colspan="4" style="text-align:center; color:var(--gray); padding:15px;">Tidak ada spare part di inventaris teknisi ini.</td></tr>`;
+                                        return techParts.map(p => {
+                                            const usedRec = (c.usedParts || []).find(up => up.partId === p.id);
+                                            const currentUsed = usedRec ? usedRec.qtyUsed : 0;
+                                            const effectiveStock = p.qty + currentUsed;
+                                            return `<tr><td><strong>${p.namaPart}</strong></td><td>${effectiveStock} unit</td><td>Rp ${(p.harga || 0).toLocaleString('id-ID')}</td><td><input type="number" id="used-qty-${c.id}-${p.id}" min="0" max="${effectiveStock}" value="${currentUsed}" oninput="updatePartCostFromInventory('${c.id}', '${techId}')" style="padding:8px 10px; font-size:13px;"></td></tr>`;
+                                        }).join('');
+                                    })()}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Biaya Part (Rp)</label><input type="number" id="cost-part-${c.id}" min="0" value="${c.costPart || 0}" oninput="calcTotal('${c.id}')"></div>
+                        <div class="form-group"><label>Ongkos Kerja (Rp)</label><input type="number" id="cost-work-${c.id}" min="0" value="${c.costWork || 0}" oninput="calcTotal('${c.id}')"></div>
+                        <div class="form-group"><label>Kunjungan (Rp)</label><input type="number" id="cost-visit-${c.id}" min="0" value="${c.costVisit || 0}" oninput="calcTotal('${c.id}')"></div>
+                        <div class="form-group"><label>Layanan Khusus / Tambahan (Rp)</label><input type="number" id="cost-extra-${c.id}" min="0" value="${c.costExtra || 0}" oninput="calcTotal('${c.id}')"></div>
+                        <div class="form-group form-full" style="background:var(--dark-card); padding:14px; border-radius:var(--radius); border:1px solid var(--dark-border);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; color:var(--gray);"><span>Subtotal:</span><strong id="subtotal-lbl-${c.id}">Rp ${c.subtotal || 0}</strong></div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; color:var(--gray);"><span>PPN 11%:</span><strong id="ppn-lbl-${c.id}">Rp ${c.ppn || 0}</strong></div>
+                            <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; border-top:1px solid var(--dark-border); padding-top:8px;"><span>Total Semua:</span><span id="grandtotal-lbl-${c.id}" style="color:var(--primary);">Rp ${c.grandTotal || 0}</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:12px; margin-top:20px;">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-floppy-disk"></i> Simpan Update Laporan</button>
+                    <button type="button" class="btn btn-secondary" onclick="navigateTo('report_list')">Kembali ke Daftar</button>
+                </div>
+            </form>
+        </div>
+    `;
+    if (c.status === 'closed') calcTotal(c.id);
+}
+
+function updatePartCostFromInventory(reportId, techId) {
+    let totalPartCost = 0;
+    loadData('lgcs_inventory').filter(p => p.ownerId === techId && p.qty > 0 && !p.pendingReturn).forEach(p => {
+        const input = document.getElementById(`used-qty-${reportId}-${p.id}`);
+        if (input) {
+            let val = parseInt(input.value) || 0;
+            if (val < 0) { val = 0; input.value = 0; }
+            totalPartCost += val * (p.harga || 0);
+        }
+    });
+    if (document.getElementById(`cost-part-${reportId}`)) document.getElementById(`cost-part-${reportId}`).value = totalPartCost;
+    calcTotal(reportId);
+}
+
+function toggleCloseCost(id) {
+    const costSec = document.getElementById(`cost-section-${id}`);
+    if (document.getElementById(`status-${id}`).value === 'closed') { costSec.classList.remove('hidden'); calcTotal(id); } 
+    else { costSec.classList.add('hidden'); }
+}
+
+function calcTotal(id) {
+    const p = parseFloat(document.getElementById(`cost-part-${id}`).value) || 0;
+    const w = parseFloat(document.getElementById(`cost-work-${id}`).value) || 0;
+    const v = parseFloat(document.getElementById(`cost-visit-${id}`).value) || 0;
+    const x = parseFloat(document.getElementById(`cost-extra-${id}`).value) || 0;
+    const subtotal = p + w + v + x;
+    const ppn = subtotal * 0.11;
+    const grandTotal = subtotal + ppn;
+    document.getElementById(`subtotal-lbl-${id}`).textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+    document.getElementById(`ppn-lbl-${id}`).textContent = 'Rp ' + ppn.toLocaleString('id-ID', {maximumFractionDigits: 0});
+    document.getElementById(`grandtotal-lbl-${id}`).textContent = 'Rp ' + grandTotal.toLocaleString('id-ID', {maximumFractionDigits: 0});
+}
+
+function saveReportUpdate(e, id) {
+    e.preventDefault();
+    const status = document.getElementById(`status-${id}`).value;
+    const notes = document.getElementById(`notes-${id}`).value.trim();
+    const fileInput = document.getElementById(`photos-${id}`);
+    let data = loadData('lgcs_customers');
+    const idx = data.findIndex(c => c.id === id);
+    if (idx < 0) return;
+    const c = data[idx];
+    let costData = {};
+    let allInv = loadData('lgcs_inventory');
+    const techId = c.teknisiId || currentUser.id;
+
+    if (c.usedParts && c.usedParts.length > 0) {
+        c.usedParts.forEach(up => {
+            let invItem = allInv.find(p => p.id === up.partId);
+            if (invItem) invItem.qty += up.qtyUsed;
+            else allInv.push({ id: up.partId, namaPart: up.namaPart, qty: up.qtyUsed, harga: up.harga || 0, keterangan: 'Dikembalikan dari update laporan', ownerId: techId, pendingReturn: false });
+        });
+        c.usedParts = [];
+    }
+
+    let newUsedParts = [];
+    if (status === 'closed') {
+        const p = parseFloat(document.getElementById(`cost-part-${id}`).value) || 0;
+        const w = parseFloat(document.getElementById(`cost-work-${id}`).value) || 0;
+        const v = parseFloat(document.getElementById(`cost-visit-${id}`).value) || 0;
+        const x = parseFloat(document.getElementById(`cost-extra-${id}`).value) || 0;
+        const subtotal = p + w + v + x, ppn = subtotal * 0.11, grandTotal = subtotal + ppn;
+        costData = { costPart: p, costWork: w, costVisit: v, costExtra: x, subtotal, ppn, grandTotal };
+
+        allInv.filter(tp => tp.ownerId === techId && tp.qty > 0 && !tp.pendingReturn).forEach(tp => {
+            const inputEl = document.getElementById(`used-qty-${id}-${tp.id}`);
+            if (inputEl) {
+                const qtyUsed = parseInt(inputEl.value) || 0;
+                if (qtyUsed > 0) { newUsedParts.push({ partId: tp.id, namaPart: tp.namaPart, qtyUsed: qtyUsed, harga: tp.harga || 0 }); tp.qty -= qtyUsed; }
+            }
+        });
+        c.usedParts = newUsedParts;
+    } else { c.usedParts = []; }
+    saveData('lgcs_inventory', allInv);
+
+    const files = fileInput.files;
+    if (files.length > 0) {
+        let readers = [], base64Images = c.photos || [];
+        Array.from(files).forEach(file => {
+            readers.push(new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (evt) => { base64Images.push(evt.target.result); resolve(); };
+                reader.readAsDataURL(file);
+            }));
+        });
+        Promise.all(readers).then(() => { c.photos = base64Images; finalizeUpdateData(data, idx, status, notes, costData); });
+    } else { finalizeUpdateData(data, idx, status, notes, costData); }
+}
+
+function finalizeUpdateData(data, idx, status, notes, costData) {
+    data[idx].status = status; data[idx].latestNotes = notes; data[idx].updatedAt = new Date().toISOString();
+    if (status === 'closed') Object.assign(data[idx], costData);
+    saveData('lgcs_customers', data);
+    showAlert('✅ Status laporan, rincian biaya & potongan inventaris berhasil disimpan!', 'success');
+    navigateTo('report_list');
+}
+
+function renderTechPage(cont) {
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-user-plus"></i> Daftarkan Teknisi Baru</h3>
+            <form id="tech-form">
+                <div class="form-grid">
+                    <div class="form-group"><label>Nama Lengkap Teknisi</label><div class="input-wrapper"><input type="text" id="tech-nama" required><i class="fas fa-user"></i></div></div>
+                    <div class="form-group"><label>Nomor WhatsApp</label><div class="input-wrapper"><input type="tel" id="tech-wa" placeholder="0812xxxxxxx" required><i class="fab fa-whatsapp"></i></div></div>
+                    <div class="form-group form-full"><label>Sandi Awal (Password)</label><div class="input-wrapper"><input type="text" id="tech-pass" required><i class="fas fa-key"></i></div></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;"><i class="fab fa-whatsapp"></i> Daftarkan & Kirim Kredensial</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-users-gear"></i> Daftar Teknisi Aktif</h3>
+            <div class="table-wrapper"><table><thead><tr><th>Nama</th><th>Username</th><th>WhatsApp</th><th>Aksi</th></tr></thead><tbody id="tech-list"></tbody></table></div>
+        </div>
+    `;
+    document.getElementById('tech-form').addEventListener('submit', registerTech); renderTechList();
+}
+
+function renderTechList() {
+    const list = document.getElementById('tech-list');
+    const techs = loadData('lgcs_users').filter(u => u.role === 'teknisi');
+    if (techs.length === 0) return list.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--gray)">Belum ada teknisi terdaftar.</td></tr>`;
+    list.innerHTML = techs.map(u => `
+        <tr><td><strong>${u.nama}</strong></td><td><code style="background:var(--dark-card); padding:4px 8px; border-radius:4px; color:var(--primary);">${u.username}</code></td>
+        <td><a href="https://wa.me/${u.nowa}" target="_blank" style="color:var(--success); font-weight:600;"><i class="fab fa-whatsapp"></i> ${u.nowa}</a></td>
+        <td><button class="btn btn-danger btn-sm" onclick="delTech('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+}
+
+function registerTech(e) {
+    e.preventDefault();
+    const nama = document.getElementById('tech-nama').value.trim();
+    let nowa = document.getElementById('tech-wa').value.trim().replace(/\D/g, '');
+    const pass = document.getElementById('tech-pass').value.trim();
+    const uname = 'tech_' + nama.toLowerCase().replace(/\s+/g, '_');
+    if (nowa.startsWith('0')) nowa = '62' + nowa.slice(1);
+    
+    let users = loadData('lgcs_users');
+    users.push({ id: genId(), username: uname, password: pass, role: 'teknisi', nama, nowa, mustChangePass: true });
+    saveData('lgcs_users', users);
+    
+    const waMsg = encodeURIComponent(`Halo ${nama}! 👋\n\nAkun My-TEKNISI Anda telah berhasil dibuat.\n\n👤 Username: ${uname}\n🔑 Sandi Awal: ${pass}\n\n⚠️ *PENTING:* Saat pertama kali login, Anda diwajibkan untuk mengubah sandi awal ini.\n\n— Administrator`);
+    window.open(`https://wa.me/${nowa}?text=${waMsg}`, '_blank');
+    showAlert('✅ Akun teknisi dibuat & WhatsApp terhubung!', 'success'); e.target.reset(); renderTechList();
+}
+
+function delTech(id) {
+    if (!confirm('Hapus akun teknisi ini?')) return;
+    saveData('lgcs_users', loadData('lgcs_users').filter(u => u.id !== id));
+    renderTechList(); showAlert('Akun teknisi telah dihapus', 'info');
+}
+
+function renderChangePassword(cont) {
+    cont.innerHTML = `
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <h3 class="card-title"><i class="fas fa-key"></i> Ubah Sandi Akun Baru</h3>
+            ${currentUser.mustChangePass ? '<div class="alert alert-warning" style="margin-bottom:20px;"><span>Harap ubah sandi awal Anda sebelum dapat mengakses menu lainnya.</span></div>' : ''}
+            <form id="change-pass-form">
+                <div class="form-group"><label>Sandi Baru</label><div class="input-wrapper"><input type="password" id="new-pass" required><i class="fas fa-lock"></i></div></div>
+                <div class="form-group"><label>Konfirmasi Sandi Baru</label><div class="input-wrapper"><input type="password" id="confirm-pass" required><i class="fas fa-lock"></i></div></div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Simpan Sandi Baru</button>
+            </form>
+        </div>
+    `;
+    document.getElementById('change-pass-form').addEventListener('submit', saveNewPassword);
+}
+
+function saveNewPassword(e) {
+    e.preventDefault();
+    const p1 = document.getElementById('new-pass').value.trim(), p2 = document.getElementById('confirm-pass').value.trim();
+    if (p1.length < 4) return showAlert('Sandi minimal 4 karakter!', 'warning');
+    if (p1 !== p2) return showAlert('Konfirmasi sandi tidak cocok!', 'danger');
+    let users = loadData('lgcs_users');
+    const idx = users.findIndex(u => u.id === currentUser.id);
+    if (idx >= 0) { users[idx].password = p1; users[idx].mustChangePass = false; saveData('lgcs_users', users); currentUser = users[idx]; }
+    showAlert('✅ Sandi berhasil diubah!', 'success'); renderSidebar(); routePage('dashboard', false);
+}
+
+function renderInventory(cont) {
+    const isAdmin = currentUser.role === 'admin';
+    cont.innerHTML = `
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-box-open"></i> ${isAdmin ? 'Inventory Pusat & Distribusi Part' : 'Spare Part Milik Anda'}</h3>
+            <form id="inv-form">
+                <div class="form-grid">
+                    <div class="form-group form-full"><label>Nama / Kode Spare Part</label><div class="input-wrapper"><input type="text" id="inv-nama" required><i class="fas fa-box"></i></div></div>
+                    <div class="form-group"><label>Jumlah Stok</label><div class="input-wrapper"><input type="number" id="inv-qty" min="1" value="1" required><i class="fas fa-hashtag"></i></div></div>
+                    <div class="form-group"><label>Harga Satuan (Rp)</label><div class="input-wrapper"><input type="number" id="inv-harga" min="0" value="0" required><i class="fas fa-tag"></i></div></div>
+                    <div class="form-group form-full"><label>Keterangan</label><div class="input-wrapper"><input type="text" id="inv-keterangan"><i class="fas fa-circle-info"></i></div></div>
+                    ${isAdmin ? `<div class="form-group form-full"><label>Distribusikan ke Teknisi</label><div class="input-wrapper"><select id="inv-target"><option value="admin">— Simpan di Pusat —</option>${getTechOptions()}</select><i class="fas fa-user-gear"></i></div></div>` : ''}
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;"><i class="fas fa-plus"></i> Simpan Spare Part</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3 class="card-title"><i class="fas fa-cubes"></i> Daftar Inventaris</h3>
+            <div class="table-wrapper"><table><thead><tr><th>Nama Part</th><th>Jumlah</th><th>Harga Satuan</th><th>Lokasi / Pemilik</th><th>Keterangan</th>${isAdmin ? '<th>Aksi</th>' : ''}</tr></thead><tbody id="inv-list"></tbody></table></div>
+        </div>
+        ${!isAdmin ? `<div class="card"><h3 class="card-title"><i class="fas fa-rotate-left"></i> Pengembalian Part ke Pusat</h3><form id="return-form"><div class="form-grid"><div class="form-group"><label>Pilih Part</label><div class="input-wrapper"><select id="ret-part"></select><i class="fas fa-list"></i></div></div><div class="form-group"><label>Jumlah Dikembalikan</label><div class="input-wrapper"><input type="number" id="ret-qty" min="1" value="1" required><i class="fas fa-hashtag"></i></div></div></div><button type="submit" class="btn btn-warning" style="margin-top:10px;"><i class="fas fa-paper-plane"></i> Kirim Permintaan Return</button></form></div>` : ''}
+    `;
+    document.getElementById('inv-form').addEventListener('submit', saveInv);
+    if (document.getElementById('return-form')) document.getElementById('return-form').addEventListener('submit', reqReturn);
+    renderInvList();
+}
+
+function renderInvList() {
+    const list = document.getElementById('inv-list');
+    let inv = loadData('lgcs_inventory');
+    const isAdmin = currentUser.role === 'admin';
+
+    if (isAdmin) {
+        let mergedInv = [], pusatMap = {};
+        inv.forEach(p => {
+            if (p.qty <= 0) return;
+            if (p.ownerId === 'admin' && !p.pendingReturn) {
+                const key = p.namaPart.toLowerCase().trim();
+                if (pusatMap[key]) { pusatMap[key].qty += p.qty; if (p.keterangan && !pusatMap[key].keterangan.includes(p.keterangan)) pusatMap[key].keterangan += `, ${p.keterangan}`; }
+                else { pusatMap[key] = { ...p }; }
+            } else { mergedInv.push(p); }
+        });
+        Object.values(pusatMap).forEach(item => mergedInv.push(item)); inv = mergedInv;
+    } else { inv = inv.filter(p => p.ownerId === currentUser.id && p.qty > 0); }
+    
+    if (inv.length === 0) return list.innerHTML = `<tr><td colspan="${isAdmin ? 6 : 5}" style="text-align:center; padding:30px; color:var(--gray)">Belum ada spare part.</td></tr>`;
+    list.innerHTML = inv.map(p => `<tr>
+        <td><strong>${p.namaPart}</strong>${p.pendingReturn ? '<br><small style="color:var(--warning)">⏳ Menunggu persetujuan admin pusat</small>' : ''}</td>
+        <td><strong>${p.qty}</strong></td><td><strong>Rp ${(p.harga || 0).toLocaleString('id-ID')}</strong></td>
+        <td>${p.ownerId==='admin' && !p.pendingReturn ? '🏢 Inventaris Pusat' : (p.pendingReturn ? `📦 Proses Return Dari ${getTechName(p.fromTech)}` : getTechName(p.ownerId))}</td>
+        <td>${p.keterangan || '-'}</td>
+        ${isAdmin ? `<td><div style="display:flex; gap:6px;">${p.ownerId === 'admin' && !p.pendingReturn ? `<button class="btn btn-info btn-sm" onclick="allocatePart('${p.id}')" title="Alokasi ke Teknisi"><i class="fas fa-share"></i> Alokasi</button>` : ''}${p.pendingReturn ? `<button class="btn btn-success btn-sm" onclick="approveReturn('${p.id}')"><i class="fas fa-check"></i> Setujui</button>` : ''}<button class="btn btn-danger btn-sm" onclick="delInv('${p.id}')"><i class="fas fa-trash"></i></button></div></td>` : ''}
+    </tr>`).join('');
+    if (!isAdmin) {
+        const sel = document.getElementById('ret-part');
+        if (sel) { const myParts = loadData('lgcs_inventory').filter(p => p.ownerId === currentUser.id && p.qty > 0 && !p.pendingReturn); sel.innerHTML = myParts.length === 0 ? '<option value="">Tidak ada part tersedia</option>' : myParts.map(p => `<option value="${p.id}">${p.namaPart} (Stok: ${p.qty})</option>`).join(''); }
+    }
+}
+
+function allocatePart(id) {
+    let inv = loadData('lgcs_inventory');
+    const part = inv.find(p => p.id === id);
+    if (!part) return;
+    const techs = loadData('lgcs_users').filter(u => u.role === 'teknisi');
+    if (techs.length === 0) return showAlert('Belum ada teknisi terdaftar!', 'warning');
+    let selectedTechId = prompt(`Pilih ID Teknisi untuk alokasi "${part.namaPart}" (Stok pusat: ${part.qty}):\n\n${techs.map(t => `ID: ${t.id} | Nama: ${t.nama}`).join('\n')}\n\nMasukkan ID Teknisi:`);
+    if (!selectedTechId) return;
+    const targetTech = techs.find(t => t.id === selectedTechId.trim() || t.username === selectedTechId.trim() || t.nama.toLowerCase() === selectedTechId.trim().toLowerCase());
+    if (!targetTech) return showAlert('Teknisi tidak ditemukan!', 'danger');
+    let qty = parseInt(prompt(`Masukkan jumlah stok yang akan dialokasikan ke ${targetTech.nama} (Maks: ${part.qty}):`, "1"));
+    if (isNaN(qty) || qty <= 0 || qty > part.qty) return showAlert('Jumlah alokasi tidak valid!', 'danger');
+
+    part.qty -= qty;
+    if (part.qty === 0) inv = inv.filter(p => p.id !== id);
+    let targetPart = inv.find(p => p.namaPart.toLowerCase() === part.namaPart.toLowerCase() && p.ownerId === targetTech.id && !p.pendingReturn);
+    if (targetPart) targetPart.qty += qty;
+    else inv.push({ id: genId(), namaPart: part.namaPart, qty: qty, harga: part.harga || 0, keterangan: part.keterangan || '', ownerId: targetTech.id, pendingReturn: false });
+    saveData('lgcs_inventory', inv); renderInvList(); showAlert(`✅ Berhasil mengalokasikan ${qty} unit ${part.namaPart} ke ${targetTech.nama}!`, 'success');
+}
+
+function saveInv(e) {
+    e.preventDefault();
+    const nama = document.getElementById('inv-nama').value.trim(), qty = parseInt(document.getElementById('inv-qty').value), harga = parseFloat(document.getElementById('inv-harga').value) || 0, keterangan = document.getElementById('inv-keterangan').value.trim(), target = document.getElementById('inv-target')?.value || 'admin';
+    let inv = loadData('lgcs_inventory');
+    const idx = inv.findIndex(p => p.namaPart.toLowerCase() === nama.toLowerCase() && p.ownerId === target && !p.pendingReturn);
+    if (idx >= 0) { inv[idx].qty += qty; inv[idx].harga = harga; if (keterangan) inv[idx].keterangan = keterangan; } 
+    else { inv.push({ id: genId(), namaPart: nama, qty, harga, keterangan, ownerId: target, pendingReturn: false }); }
+    saveData('lgcs_inventory', inv); e.target.reset(); showAlert('✅ Inventaris diperbarui!', 'success'); renderInvList();
+}
+
+function reqReturn(e) {
+    e.preventDefault();
+    const partId = document.getElementById('ret-part').value, retQty = parseInt(document.getElementById('ret-qty').value);
+    let inv = loadData('lgcs_inventory');
+    const part = inv.find(p => p.id === partId && p.ownerId === currentUser.id);
+    if (!part || part.qty < retQty) return showAlert('Stok tidak mencukupi!', 'warning');
+    part.qty -= retQty; if (part.qty === 0) inv = inv.filter(p => p.id !== partId);
+    inv.push({ id: genId(), namaPart: part.namaPart, qty: retQty, harga: part.harga || 0, keterangan: part.keterangan || '', ownerId: 'admin', pendingReturn: true, fromTech: currentUser.id });
+    saveData('lgcs_inventory', inv); showAlert('📤 Permintaan pengembalian dikirim!', 'success'); renderInvList();
+}
+
+function approveReturn(id) {
+    let inv = loadData('lgcs_inventory');
+    const rec = inv.find(p => p.id === id && p.pendingReturn);
+    if (!rec) return;
+    rec.pendingReturn = false; rec.ownerId = 'admin';
+    const similarAdmin = inv.find(p => p.id !== id && p.namaPart.toLowerCase() === rec.namaPart.toLowerCase() && p.ownerId === 'admin' && !p.pendingReturn);
+    if (similarAdmin) { similarAdmin.qty += rec.qty; inv = inv.filter(p => p.id !== id); }
+    saveData('lgcs_inventory', inv); showAlert('✅ Pengembalian disetujui!', 'success'); renderInvList();
+}
+function delInv(id) { if (!confirm('Hapus part ini?')) return; saveData('lgcs_inventory', loadData('lgcs_inventory').filter(p => p.id !== id)); renderInvList(); showAlert('Data dihapus', 'info'); }
+
+function renderChat(cont) {
+    const otherTechs = loadData('lgcs_users').filter(u => u.role === 'teknisi' && u.id !== currentUser.id);
+    cont.innerHTML = `
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--dark-border);">
+                <h3 class="card-title" style="margin:0; border:none; padding:0;"><i class="fas fa-comments"></i> Pesan & Komunikasi Tim</h3>
+                <button class="btn btn-danger btn-sm" onclick="clearAllChatHistory()"><i class="fas fa-trash-can"></i> Hapus Semua Riwayat Chat</button>
+            </div>
+            <div style="margin-bottom:16px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+                <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="all" checked onchange="handleChatScopeChange()"><span>Forum Semua Anggota</span></label>
+                ${currentUser.role === 'teknisi' ? `<label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="admin" onchange="handleChatScopeChange()"><span>Privat ke Admin</span></label>` : ''}
+                <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="private-tech" onchange="handleChatScopeChange()"><span>Chat Privat Antar Teknisi</span></label>
+            </div>
+            <div id="tech-recipient-wrapper" class="hidden" style="margin-bottom:16px;">
+                <label>Pilih Rekan Teknisi Tujuan</label>
+                <div class="input-wrapper"><select id="chat-target-tech" onchange="renderChatMsgs()"><option value="">-- Pilih Rekan Teknisi --</option>${otherTechs.map(t => `<option value="${t.id}">${t.nama}</option>`).join('')}</select><i class="fas fa-user-gear"></i></div>
+            </div>
+            <div class="chat-container">
+                <div id="chat-display" class="chat-messages"></div>
+                <div class="chat-input-area">
+                    <div class="chat-toolbar">
+                        <label title="Lampirkan File Dokumen atau Gambar"><i class="fas fa-paperclip" style="color:var(--primary);"></i> Lampirkan File<input type="file" id="chat-file-input" class="hidden" onchange="handleChatFileUpload(event)"></label>
+                        <label title="Ambil Foto Kamera"><i class="fas fa-camera" style="color:var(--primary);"></i> Kamera / Foto<input type="file" id="chat-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handleChatFileUpload(event)"></label>
+                        <span id="chat-attachment-indicator" style="font-size:12px; color:var(--warning);"></span>
+                    </div>
+                    <div class="chat-main-input"><input type="text" id="chat-input" placeholder="Ketik pesan diskusi..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-primary" style="width:auto; padding:0 24px;" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button></div>
+                </div>
+            </div>
+        </div>
+    `;
+    renderChatMsgs();
+}
+
+function handleChatScopeChange() {
+    const scope = document.querySelector('input[name="chat-scope"]:checked').value;
+    if (scope === 'private-tech') document.getElementById('tech-recipient-wrapper').classList.remove('hidden'); else document.getElementById('tech-recipient-wrapper').classList.add('hidden');
+    renderChatMsgs();
+}
+
+function handleChatFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        chatAttachmentsPending = { name: file.name, type: file.type.startsWith('image/') ? 'image' : 'file', data: evt.target.result };
+        const indicator = document.getElementById('chat-attachment-indicator');
+        if (indicator) indicator.textContent = `📎 Terlampir: ${file.name}`;
+        showAlert(`File ${file.name} berhasil dilampirkan siap dikirim.`, 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function renderChatMsgs() {
+    const scopeEl = document.querySelector('input[name="chat-scope"]:checked'), scope = scopeEl ? scopeEl.value : 'all', targetTechId = document.getElementById('chat-target-tech')?.value || '', box = document.getElementById('chat-display');
+    if (!box) return;
+    let msgs = loadData('lgcs_chat');
+    
+    if (scope === 'all') msgs = msgs.filter(m => m.scope === 'all' || !m.scope);
+    else if (scope === 'admin') msgs = msgs.filter(m => m.scope === 'admin' && (m.senderId === currentUser.id || m.recipientId === currentUser.id || currentUser.role === 'admin'));
+    else if (scope === 'private-tech') {
+        if (!targetTechId) return box.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray);">Silakan pilih rekan teknisi tujuan terlebih dahulu untuk melihat chat privat.</div>`;
+        msgs = msgs.filter(m => m.scope === 'private-tech' && ((m.senderId === currentUser.id && m.recipientId === targetTechId) || (m.senderId === targetTechId && m.recipientId === currentUser.id)));
+    }
+    
+    if (msgs.length === 0) return box.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray);">Belum ada riwayat percakapan pada topik ini.</div>`;
+    box.innerHTML = msgs.map(m => {
+        const isMine = m.senderId === currentUser.id;
+        let attachmentHtml = '';
+        if (m.attachment) {
+            if (m.attachment.type === 'image') attachmentHtml = `<img src="${m.attachment.data}" class="attachment-preview" onclick="window.open('${m.attachment.data}')" title="Klik untuk memperbesar">`;
+            else attachmentHtml = `<a href="${m.attachment.data}" download="${m.attachment.name}" class="file-attachment-box" target="_blank"><i class="fas fa-file-arrow-down"></i><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px;">${m.attachment.name}</span></a>`;
+        }
+        return `<div class="chat-msg ${isMine ? 'mine' : 'other'}"><div class="chat-bubble">${m.text ? `<div>${m.text}</div>` : ''}${attachmentHtml}</div><div class="chat-meta"><span>${m.senderName} • ${new Date(m.time).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>${isMine || currentUser.role === 'admin' ? `<button class="chat-delete-btn" onclick="deleteChatMessage('${m.id}')"><i class="fas fa-trash"></i> Hapus</button>` : ''}</div></div>`;
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+}
+
+function sendChat() {
+    const inp = document.getElementById('chat-input'), text = inp.value.trim(), scope = document.querySelector('input[name="chat-scope"]:checked').value, targetTechId = document.getElementById('chat-target-tech')?.value || '';
+    if (!text && !chatAttachmentsPending) return;
+    if (scope === 'private-tech' && !targetTechId) return showAlert('Pilih rekan teknisi tujuan terlebih dahulu!', 'warning');
+    let msgs = loadData('lgcs_chat');
+    msgs.push({ id: genId(), senderId: currentUser.id, senderName: currentUser.nama, senderRole: currentUser.role, recipientId: scope === 'private-tech' ? targetTechId : (scope === 'admin' ? 'admin' : null), text, scope, attachment: chatAttachmentsPending || null, readByAdmin: currentUser.role === 'admin', readByTech: currentUser.role === 'teknisi', time: new Date().toISOString() });
+    saveData('lgcs_chat', msgs);
+    inp.value = ''; chatAttachmentsPending = null;
+    const indicator = document.getElementById('chat-attachment-indicator');
+    if (indicator) indicator.textContent = '';
+    renderChatMsgs();
+}
+
+function deleteChatMessage(msgId) {
+    if (!confirm('Yakin ingin menghapus pesan ini?')) return;
+    saveData('lgcs_chat', loadData('lgcs_chat').filter(m => m.id !== msgId));
+    renderChatMsgs(); showAlert('Pesan berhasil dihapus.', 'info');
+}
+
+function clearAllChatHistory() {
+    const scope = document.querySelector('input[name="chat-scope"]:checked').value;
+    const targetTechId = document.getElementById('chat-target-tech')?.value || '';
+
+    if (!confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat percakapan pada tampilan ini?')) return;
+    let msgs = loadData('lgcs_chat');
+    
+    if (scope === 'all') {
+        msgs = msgs.filter(m => m.scope !== 'all' && m.scope);
+    } else if (scope === 'admin') {
+        msgs = msgs.filter(m => m.scope !== 'admin' || (m.senderId !== currentUser.id && m.recipientId !== currentUser.id && currentUser.role !== 'admin'));
+    } else if (scope === 'private-tech') {
+        msgs = msgs.filter(m => !(m.scope === 'private-tech' && ((m.senderId === currentUser.id && m.recipientId === targetTechId) || (m.senderId === targetTechId && m.recipientId === currentUser.id))));
+    }
+    
+    saveData('lgcs_chat', msgs);
+    renderChatMsgs();
+    showAlert('Riwayat percakapan berhasil dibersihkan.', 'info');
+}
+</script>
+</body>
+</html>
