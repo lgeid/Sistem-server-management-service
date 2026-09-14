@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My-TEKNISI - Sistem Manajemen Terpadu</title>
+    <title>My-TEKNISI - Sistem Manajemen</title>
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) { 
+        await OneSignal.init({                           
+          appId: "dd79aff6-c943-4b2a-95b0-cd0b8cf94004", 
+          notifyButton: {
+            enable: true,
+            colors: {
+                'circle.background': 'rgb(0, 255, 157)', 
+                'circle.foreground': '#000000',
+            }
+          },
+        });
+      });
+    </script>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -27,7 +45,6 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Modifikasi Body dengan Background Transparan */
         body { 
             background: linear-gradient(rgba(11, 12, 16, 0.88), rgba(11, 12, 16, 0.88)), url('https://files.catbox.moe/oqg2hg.jpeg') center/cover fixed;
             color: #ECEFF4; line-height: 1.6; overflow-x: hidden; transition: background 0.3s, color 0.3s;
@@ -171,28 +188,81 @@
         .badge-visit { background: rgba(124,77,255,0.15); color: #B388FF; border: 1px solid rgba(124,77,255,0.3); }
         .badge-closed { background: rgba(0,200,83,0.15); color: #69F0AE; border: 1px solid rgba(0,200,83,0.3); }
 
-        .chat-container { display: flex; flex-direction: column; height: 560px; border: 1px solid var(--dark-border); border-radius: var(--radius); overflow: hidden; background: #0B0C10; }
-        .chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .chat-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--dark-border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .chat-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-header-title i {
+            font-size: 22px;
+            color: var(--primary);
+            background: rgba(255, 159, 28, 0.12);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+        }
+        .chat-header-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+        .chat-header-title p {
+            font-size: 12px;
+            color: var(--gray);
+            margin: 2px 0 0 0;
+        }
+
+        .chat-control-panel {
+            background: #0B0C10;
+            border: 1px solid var(--dark-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .chat-container { display: flex; flex-direction: column; height: 580px; border: 1px solid var(--dark-border); border-radius: var(--radius); overflow: hidden; background: #0B0C10; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: radial-gradient(circle at top right, rgba(20, 22, 31, 0.4), transparent); }
         .chat-msg { max-width: 78%; display: flex; flex-direction: column; position: relative; }
         .chat-msg.mine { margin-left: auto; align-items: flex-end; }
         .chat-msg.other { margin-right: auto; align-items: flex-start; }
-        .chat-bubble { padding: 14px 18px; border-radius: 16px; line-height: 1.5; color: #fff; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative; word-break: break-word; }
-        .chat-msg.mine .chat-bubble { background: var(--primary); color: #0B0C10; font-weight: 600; border-bottom-right-radius: 4px; }
-        .chat-msg.other .chat-bubble { background: var(--dark-card); border: 1px solid var(--dark-border); border-bottom-left-radius: 4px; }
-        .chat-meta { font-size: 11px; color: var(--gray); margin-top: 4px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-        .chat-delete-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 12px; opacity: 0.6; transition: var(--transition); padding: 2px 6px; border-radius: 4px; }
-        .chat-delete-btn:hover { opacity: 1; background: rgba(255,82,82,0.15); }
+        
+        .chat-sender-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chat-msg.mine .chat-sender-name { flex-direction: row-reverse; }
+
+        .chat-bubble { padding: 14px 18px; border-radius: 14px; line-height: 1.55; color: #fff; font-size: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.25); position: relative; word-break: break-word; }
+        .chat-msg.mine .chat-bubble { background: linear-gradient(135deg, var(--primary), #E0890D); color: #0B0C10; font-weight: 600; border-top-right-radius: 2px; }
+        .chat-msg.other .chat-bubble { background: var(--dark-card); border: 1px solid var(--dark-border); border-top-left-radius: 2px; }
+        .chat-meta { font-size: 11px; color: var(--gray); margin-top: 6px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .chat-delete-btn { background: none; border: 1px solid rgba(255,82,82,0.2); color: var(--danger); cursor: pointer; font-size: 11px; opacity: 0.8; transition: var(--transition); padding: 2px 8px; border-radius: 4px; }
+        .chat-delete-btn:hover { opacity: 1; background: rgba(255,82,82,0.15); border-color: var(--danger); }
         
         .chat-input-area { display: flex; flex-direction: column; background: var(--dark-card); border-top: 1px solid var(--dark-border); }
-        .chat-toolbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--dark-border); background: #10121A; }
-        .chat-toolbar label { margin: 0; font-size: 12px; color: var(--gray); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--dark-hover); border-radius: var(--radius-sm); border: 1px solid var(--dark-border); transition: var(--transition); }
-        .chat-toolbar label:hover { border-color: var(--primary); color: #fff; }
-        .chat-main-input { display: flex; padding: 14px 16px; gap: 12px; align-items: center; }
-        .chat-main-input input[type="text"] { flex: 1; margin: 0; }
+        .chat-main-input { display: flex; padding: 14px 18px; gap: 12px; align-items: center; }
+        .chat-main-input input[type="text"] { flex: 1; margin: 0; background: #0B0C10; border-color: var(--dark-border); font-size: 14px; }
 
-        .attachment-preview { max-width: 180px; max-height: 180px; border-radius: 8px; margin-top: 8px; object-fit: cover; border: 1px solid var(--dark-border); display: block; }
-        .file-attachment-box { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.1); text-decoration: none; color: inherit; font-size: 13px; }
-        .file-attachment-box i { font-size: 18px; color: var(--primary); }
+        .attachment-preview { max-width: 220px; max-height: 220px; border-radius: 8px; margin-top: 10px; object-fit: cover; border: 1px solid var(--dark-border); display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 
         .alert { padding: 16px 20px; border-radius: var(--radius); margin-bottom: 24px; display: flex; align-items: center; gap: 14px; font-weight: 600; animation: slideDown 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -201,7 +271,6 @@
         .alert-warning { background: rgba(255,171,0,0.15); color: #FFD54F; border-left: 5px solid var(--warning); border: 1px solid rgba(255,171,0,0.3); }
         .alert-danger { background: rgba(255,82,82,0.15); color: #FF8A80; border-left: 5px solid var(--danger); border: 1px solid rgba(255,82,82,0.3); }
 
-        /* SPLASH SCREEN CSS */
         #splash-screen {
             position: fixed; inset: 0; background: rgba(11, 12, 16, 0.95); z-index: 10000;
             display: flex; align-items: center; justify-content: center;
@@ -221,7 +290,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* LIGHT MODE VARIABLES & OVERRIDES */
         body.light-mode {
             background: linear-gradient(rgba(247, 249, 251, 0.92), rgba(247, 249, 251, 0.92)), url('https://files.catbox.moe/oqg2hg.jpeg') center/cover fixed;
             color: #2D3748;
@@ -233,7 +301,7 @@
         body.light-mode .login-card, body.light-mode .card, body.light-mode .top-bar, body.light-mode .sidebar {
             background: var(--dark-card); box-shadow: 0 4px 25px rgba(0,0,0,0.05); border-color: var(--dark-border);
         }
-        body.light-mode h1, body.light-mode h2, body.light-mode h3, body.light-mode h4, body.light-mode .card-title { color: #1A202C; }
+        body.light-mode h1, body.light-mode h2, body.light-mode h3, body.light-mode h4, body.light-mode .card-title, body.light-mode .chat-header-title h3 { color: #1A202C; }
         body.light-mode .login-logo p, body.light-mode label, body.light-mode th { color: #718096; }
         body.light-mode input, body.light-mode select, body.light-mode textarea { background: #FFFFFF; color: #2D3748; border-color: var(--dark-border); }
         body.light-mode input:focus, body.light-mode select:focus, body.light-mode textarea:focus { background: #FFFFFF; border-color: var(--primary); }
@@ -241,9 +309,10 @@
         body.light-mode th { background: #F7FAFC; }
         body.light-mode td { color: #4A5568; border-bottom: 1px solid var(--dark-border); }
         body.light-mode tr.clickable-row:hover td { background: rgba(255, 159, 28, 0.1); color: #1A202C; }
+        body.light-mode .chat-control-panel { background: #F7FAFC; border-color: var(--dark-border); }
         body.light-mode .chat-container { background: #FFFFFF; border-color: var(--dark-border); }
-        body.light-mode .chat-toolbar { background: #F7FAFC; border-color: var(--dark-border); }
         body.light-mode .chat-msg.other .chat-bubble { background: #F7FAFC; color: #2D3748; border-color: var(--dark-border); }
+        body.light-mode .chat-main-input input[type="text"] { background: #FFFFFF; border-color: var(--dark-border); }
         body.light-mode .login-footer { background: #F7FAFC; border-color: #CBD5E0; color: #4A5568; }
         body.light-mode .menu-toggle-btn, body.light-mode .back-nav-btn, body.light-mode .theme-toggle-btn { color: #4A5568; }
         body.light-mode .sidebar-nav li a { color: #4A5568; }
@@ -262,6 +331,7 @@
         }
         @media (max-width: 576px) {
             .top-bar { padding: 12px 16px; }
+            .chat-msg { max-width: 88%; }
         }
     </style>
 </head>
@@ -345,7 +415,8 @@
 </div>
 
 <script>
-const API_URL = 'http://20.219.4.22:9993/api/data';
+const API_URL = 'https://wabot.lgeid.my.id/api/data';
+const NOTIFY_URL = 'https://wabot.lgeid.my.id/api/notify';
 let serverData = { users: [], customers: [], inventory: [], chat: [] };
 let currentUser = null;
 let pageHistory = [];
@@ -423,14 +494,6 @@ function generateNoLaporan() {
     return `RNP${yy}${mm}${dd}${random4}`;
 }
 
-function saveData(k, v) { 
-    if (k === 'lgcs_users') serverData.users = v;
-    if (k === 'lgcs_customers') serverData.customers = v;
-    if (k === 'lgcs_inventory') serverData.inventory = v;
-    if (k === 'lgcs_chat') serverData.chat = v;
-    saveServerDataCompletely(); 
-}
-
 function loadData(k) { 
     if (k === 'lgcs_users') return serverData.users || [];
     if (k === 'lgcs_customers') return serverData.customers || [];
@@ -465,12 +528,10 @@ async function login() {
     currentUser = found;
     document.getElementById('page-login').classList.add('hidden');
     
-    // Tampilkan Splash Screen Animasi
     const splash = document.getElementById('splash-screen');
     splash.classList.remove('hidden');
     splash.style.opacity = '1';
 
-    // Set Data di Latar Belakang
     document.getElementById('user-avatar').textContent = found.nama.charAt(0).toUpperCase();
     document.getElementById('user-name').textContent = found.nama;
     document.getElementById('user-role').textContent = found.role === 'admin' ? 'Administrator' : 'Teknisi Lapangan';
@@ -485,7 +546,6 @@ async function login() {
         routePage('dashboard', false);
     }
 
-    // Hilangkan Splash Screen Setelah Beberapa Detik
     setTimeout(() => {
         splash.style.opacity = '0';
         setTimeout(() => {
@@ -494,8 +554,8 @@ async function login() {
             if (currentUser.role === 'teknisi' && currentUser.mustChangePass) {
                 showAlert('⚠️ Anda login untuk pertama kali. Harap ubah sandi awal Anda.', 'warning');
             }
-        }, 500); // Waktu transisi fade out
-    }, 2500); // Waktu loading splash
+        }, 500);
+    }, 2500);
 }
 
 function logout() {
@@ -653,7 +713,7 @@ function markChatsAsRead() {
         if (currentUser.role === 'admin' && !m.readByAdmin) { m.readByAdmin = true; updated = true; } 
         else if (currentUser.role === 'teknisi' && m.recipientId === currentUser.id && !m.readByTech) { m.readByTech = true; updated = true; }
     });
-    if (updated) { saveData('lgcs_chat', msgs); renderSidebar(); }
+    if (updated) { saveServerDataCompletely(); renderSidebar(); }
 }
 
 function ifAdmin(cont, fn) {
@@ -847,7 +907,8 @@ function saveCustomer(e) {
         status: 'pending-part', teknisiId: currentUser.role==='admin' ? document.getElementById('cust-teknisi')?.value : currentUser.id,
         updatedAt: new Date().toISOString()
     });
-    saveData('lgcs_customers', data);
+    serverData.customers = data;
+    saveServerDataCompletely();
     showAlert('✅ Data laporan berhasil disimpan!', 'success');
     navigateTo('report_list');
 }
@@ -898,7 +959,8 @@ function openReportDetail(id) {
 
 function delCustomer(id) {
     if (!confirm('Yakin ingin menghapus data laporan ini?')) return;
-    saveData('lgcs_customers', loadData('lgcs_customers').filter(x => x.id !== id));
+    serverData.customers = loadData('lgcs_customers').filter(x => x.id !== id);
+    saveServerDataCompletely();
     renderCustomerListTable();
     showAlert('🗑️ Data laporan telah dihapus', 'info');
 }
@@ -1065,7 +1127,7 @@ function saveReportUpdate(e, id) {
         });
         c.usedParts = newUsedParts;
     } else { c.usedParts = []; }
-    saveData('lgcs_inventory', allInv);
+    serverData.inventory = allInv;
 
     const files = fileInput.files;
     if (files.length > 0) {
@@ -1084,7 +1146,8 @@ function saveReportUpdate(e, id) {
 function finalizeUpdateData(data, idx, status, notes, costData) {
     data[idx].status = status; data[idx].latestNotes = notes; data[idx].updatedAt = new Date().toISOString();
     if (status === 'closed') Object.assign(data[idx], costData);
-    saveData('lgcs_customers', data);
+    serverData.customers = data;
+    saveServerDataCompletely();
     showAlert('✅ Status laporan, rincian biaya & potongan inventaris berhasil disimpan!', 'success');
     navigateTo('report_list');
 }
@@ -1130,7 +1193,8 @@ function registerTech(e) {
     
     let users = loadData('lgcs_users');
     users.push({ id: genId(), username: uname, password: pass, role: 'teknisi', nama, nowa, mustChangePass: true });
-    saveData('lgcs_users', users);
+    serverData.users = users;
+    saveServerDataCompletely();
     
     const waMsg = encodeURIComponent(`Halo ${nama}! 👋\n\nAkun My-TEKNISI Anda telah berhasil dibuat.\n\n👤 Username: ${uname}\n🔑 Sandi Awal: ${pass}\n\n⚠️ *PENTING:* Saat pertama kali login, Anda diwajibkan untuk mengubah sandi awal ini.\n\n— Administrator`);
     window.open(`https://wa.me/${nowa}?text=${waMsg}`, '_blank');
@@ -1139,7 +1203,8 @@ function registerTech(e) {
 
 function delTech(id) {
     if (!confirm('Hapus akun teknisi ini?')) return;
-    saveData('lgcs_users', loadData('lgcs_users').filter(u => u.id !== id));
+    serverData.users = loadData('lgcs_users').filter(u => u.id !== id);
+    saveServerDataCompletely();
     renderTechList(); showAlert('Akun teknisi telah dihapus', 'info');
 }
 
@@ -1165,7 +1230,7 @@ function saveNewPassword(e) {
     if (p1 !== p2) return showAlert('Konfirmasi sandi tidak cocok!', 'danger');
     let users = loadData('lgcs_users');
     const idx = users.findIndex(u => u.id === currentUser.id);
-    if (idx >= 0) { users[idx].password = p1; users[idx].mustChangePass = false; saveData('lgcs_users', users); currentUser = users[idx]; }
+    if (idx >= 0) { users[idx].password = p1; users[idx].mustChangePass = false; serverData.users = users; saveServerDataCompletely(); currentUser = users[idx]; }
     showAlert('✅ Sandi berhasil diubah!', 'success'); renderSidebar(); routePage('dashboard', false);
 }
 
@@ -1234,167 +1299,226 @@ function allocatePart(id) {
     if (!part) return;
     const techs = loadData('lgcs_users').filter(u => u.role === 'teknisi');
     if (techs.length === 0) return showAlert('Belum ada teknisi terdaftar!', 'warning');
+    
     let selectedTechId = prompt(`Pilih ID Teknisi untuk alokasi "${part.namaPart}" (Stok pusat: ${part.qty}):\n\n${techs.map(t => `ID: ${t.id} | Nama: ${t.nama}`).join('\n')}\n\nMasukkan ID Teknisi:`);
     if (!selectedTechId) return;
+    
     const targetTech = techs.find(t => t.id === selectedTechId.trim() || t.username === selectedTechId.trim() || t.nama.toLowerCase() === selectedTechId.trim().toLowerCase());
     if (!targetTech) return showAlert('Teknisi tidak ditemukan!', 'danger');
-    let qty = parseInt(prompt(`Masukkan jumlah stok yang akan dialokasikan ke ${targetTech.nama} (Maks: ${part.qty}):`, "1"));
-    if (isNaN(qty) || qty <= 0 || qty > part.qty) return showAlert('Jumlah alokasi tidak valid!', 'danger');
-
+    
+    let qty = parseInt(prompt(`Masukkan jumlah stok yang akan dialokasikan ke ${targetTech.nama} (Maks: ${part.qty}):`));
+    if (isNaN(qty) || qty <= 0 || qty > part.qty) return showAlert('Jumlah tidak valid!', 'warning');
+    
     part.qty -= qty;
-    if (part.qty === 0) inv = inv.filter(p => p.id !== id);
-    let targetPart = inv.find(p => p.namaPart.toLowerCase() === part.namaPart.toLowerCase() && p.ownerId === targetTech.id && !p.pendingReturn);
-    if (targetPart) targetPart.qty += qty;
-    else inv.push({ id: genId(), namaPart: part.namaPart, qty: qty, harga: part.harga || 0, keterangan: part.keterangan || '', ownerId: targetTech.id, pendingReturn: false });
-    saveData('lgcs_inventory', inv); renderInvList(); showAlert(`✅ Berhasil mengalokasikan ${qty} unit ${part.namaPart} ke ${targetTech.nama}!`, 'success');
+    inv.push({ id: genId(), namaPart: part.namaPart, qty: qty, harga: part.harga, keterangan: 'Alokasi dari pusat', ownerId: targetTech.id, pendingReturn: false });
+    serverData.inventory = inv;
+    saveServerDataCompletely();
+    renderInvList();
+    showAlert(`✅ Berhasil dialokasikan ke ${targetTech.nama}`, 'success');
 }
 
 function saveInv(e) {
     e.preventDefault();
-    const nama = document.getElementById('inv-nama').value.trim(), qty = parseInt(document.getElementById('inv-qty').value), harga = parseFloat(document.getElementById('inv-harga').value) || 0, keterangan = document.getElementById('inv-keterangan').value.trim(), target = document.getElementById('inv-target')?.value || 'admin';
+    const namaPart = document.getElementById('inv-nama').value.trim();
+    const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+    const harga = parseInt(document.getElementById('inv-harga').value) || 0;
+    const keterangan = document.getElementById('inv-keterangan').value.trim();
+    const target = currentUser.role === 'admin' ? document.getElementById('inv-target').value : currentUser.id;
+    
     let inv = loadData('lgcs_inventory');
-    const idx = inv.findIndex(p => p.namaPart.toLowerCase() === nama.toLowerCase() && p.ownerId === target && !p.pendingReturn);
-    if (idx >= 0) { inv[idx].qty += qty; inv[idx].harga = harga; if (keterangan) inv[idx].keterangan = keterangan; } 
-    else { inv.push({ id: genId(), namaPart: nama, qty, harga, keterangan, ownerId: target, pendingReturn: false }); }
-    saveData('lgcs_inventory', inv); e.target.reset(); showAlert('✅ Inventaris diperbarui!', 'success'); renderInvList();
+    inv.push({ id: genId(), namaPart, qty, harga, keterangan, ownerId: target, pendingReturn: false });
+    serverData.inventory = inv;
+    saveServerDataCompletely();
+    
+    showAlert('✅ Data part berhasil disimpan', 'success');
+    e.target.reset();
+    renderInvList();
 }
 
 function reqReturn(e) {
     e.preventDefault();
-    const partId = document.getElementById('ret-part').value, retQty = parseInt(document.getElementById('ret-qty').value);
+    const partId = document.getElementById('ret-part').value;
+    const qty = parseInt(document.getElementById('ret-qty').value) || 1;
+    if (!partId) return showAlert('Pilih part!', 'warning');
+    
     let inv = loadData('lgcs_inventory');
-    const part = inv.find(p => p.id === partId && p.ownerId === currentUser.id);
-    if (!part || part.qty < retQty) return showAlert('Stok tidak mencukupi!', 'warning');
-    part.qty -= retQty; if (part.qty === 0) inv = inv.filter(p => p.id !== partId);
-    inv.push({ id: genId(), namaPart: part.namaPart, qty: retQty, harga: part.harga || 0, keterangan: part.keterangan || '', ownerId: 'admin', pendingReturn: true, fromTech: currentUser.id });
-    saveData('lgcs_inventory', inv); showAlert('📤 Permintaan pengembalian dikirim!', 'success'); renderInvList();
+    const idx = inv.findIndex(p => p.id === partId);
+    if (idx < 0 || inv[idx].qty < qty) return showAlert('Stok tidak cukup!', 'danger');
+    
+    inv[idx].qty -= qty;
+    inv.push({ id: genId(), namaPart: inv[idx].namaPart, qty: qty, harga: inv[idx].harga, keterangan: 'Return dari teknisi', ownerId: 'admin', pendingReturn: true, fromTech: currentUser.id });
+    serverData.inventory = inv;
+    saveServerDataCompletely();
+    
+    showAlert('✅ Permintaan return dikirim ke pusat', 'success');
+    e.target.reset();
+    renderInvList();
+    renderSidebar();
 }
 
 function approveReturn(id) {
     let inv = loadData('lgcs_inventory');
-    const rec = inv.find(p => p.id === id && p.pendingReturn);
-    if (!rec) return;
-    rec.pendingReturn = false; rec.ownerId = 'admin';
-    const similarAdmin = inv.find(p => p.id !== id && p.namaPart.toLowerCase() === rec.namaPart.toLowerCase() && p.ownerId === 'admin' && !p.pendingReturn);
-    if (similarAdmin) { similarAdmin.qty += rec.qty; inv = inv.filter(p => p.id !== id); }
-    saveData('lgcs_inventory', inv); showAlert('✅ Pengembalian disetujui!', 'success'); renderInvList();
+    const part = inv.find(p => p.id === id);
+    if (part) { 
+        part.pendingReturn = false; 
+        serverData.inventory = inv;
+        saveServerDataCompletely(); 
+        renderInvList(); 
+        renderSidebar(); 
+        showAlert('✅ Return disetujui', 'success'); 
+    }
 }
-function delInv(id) { if (!confirm('Hapus part ini?')) return; saveData('lgcs_inventory', loadData('lgcs_inventory').filter(p => p.id !== id)); renderInvList(); showAlert('Data dihapus', 'info'); }
+
+function delInv(id) {
+    if (!confirm('Hapus part ini dari inventaris?')) return;
+    serverData.inventory = loadData('lgcs_inventory').filter(p => p.id !== id);
+    saveServerDataCompletely();
+    renderInvList();
+    showAlert('🗑️ Part dihapus', 'info');
+}
 
 function renderChat(cont) {
-    const otherTechs = loadData('lgcs_users').filter(u => u.role === 'teknisi' && u.id !== currentUser.id);
     cont.innerHTML = `
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--dark-border);">
-                <h3 class="card-title" style="margin:0; border:none; padding:0;"><i class="fas fa-comments"></i> Pesan & Komunikasi Tim</h3>
-                <button class="btn btn-danger btn-sm" onclick="clearAllChatHistory()"><i class="fas fa-trash-can"></i> Hapus Semua Riwayat Chat</button>
-            </div>
-            <div style="margin-bottom:16px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
-                <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="all" checked onchange="handleChatScopeChange()"><span>Forum Semua Anggota</span></label>
-                ${currentUser.role === 'teknisi' ? `<label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="admin" onchange="handleChatScopeChange()"><span>Privat ke Admin</span></label>` : ''}
-                <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; margin:0;"><input type="radio" name="chat-scope" value="private-tech" onchange="handleChatScopeChange()"><span>Chat Privat Antar Teknisi</span></label>
-            </div>
-            <div id="tech-recipient-wrapper" class="hidden" style="margin-bottom:16px;">
-                <label>Pilih Rekan Teknisi Tujuan</label>
-                <div class="input-wrapper"><select id="chat-target-tech" onchange="renderChatMsgs()"><option value="">-- Pilih Rekan Teknisi --</option>${otherTechs.map(t => `<option value="${t.id}">${t.nama}</option>`).join('')}</select><i class="fas fa-user-gear"></i></div>
-            </div>
-            <div class="chat-container">
-                <div id="chat-display" class="chat-messages"></div>
-                <div class="chat-input-area">
-                    <div class="chat-toolbar">
-                        <label title="Lampirkan File Dokumen atau Gambar"><i class="fas fa-paperclip" style="color:var(--primary);"></i> Lampirkan File<input type="file" id="chat-file-input" class="hidden" onchange="handleChatFileUpload(event)"></label>
-                        <label title="Ambil Foto Kamera"><i class="fas fa-camera" style="color:var(--primary);"></i> Kamera / Foto<input type="file" id="chat-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handleChatFileUpload(event)"></label>
-                        <span id="chat-attachment-indicator" style="font-size:12px; color:var(--warning);"></span>
+        <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 75vh;">
+            <div class="chat-header-section" style="padding: 20px; background: var(--dark-card); border-bottom: 1px solid var(--dark-border);">
+                <div class="chat-header-title">
+                    <i class="fas fa-comments"></i>
+                    <div>
+                        <h3>Komunikasi Tim</h3>
+                        <p>Ruang diskusi dan koordinasi perbaikan</p>
                     </div>
-                    <div class="chat-main-input"><input type="text" id="chat-input" placeholder="Ketik pesan diskusi..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-primary" style="width:auto; padding:0 24px;" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button></div>
                 </div>
+            </div>
+            
+            ${currentUser.role === 'admin' ? `
+            <div class="chat-control-panel" style="margin: 0 20px 10px 20px;">
+                <label style="font-size: 12px;">Pilih Tujuan Chat:</label>
+                <select id="chat-recipient" onchange="loadChatMessages()" style="background: var(--dark-hover); border: 1px solid var(--dark-border); padding: 10px; border-radius: var(--radius-sm); color: #fff; width: 100%;">
+                    <option value="all">Semua Teknisi (Pesan Siaran)</option>
+                    ${loadData('lgcs_users').filter(u => u.role === 'teknisi').map(u => `<option value="${u.id}">${u.nama}</option>`).join('')}
+                </select>
+            </div>
+            ` : `<input type="hidden" id="chat-recipient" value="admin">`}
+            
+            <div class="chat-messages" id="chat-messages" style="flex: 1; overflow-y: auto; padding: 20px;"></div>
+            
+            <div class="chat-input-area" style="padding: 15px; background: var(--dark-card); border-top: 1px solid var(--dark-border);">
+                <div id="attachment-preview-container" class="hidden" style="margin-bottom: 10px; position: relative; display: inline-block;">
+                    <img id="attachment-img" class="attachment-preview" src="">
+                    <button type="button" onclick="clearAttachment()" style="position: absolute; top: 15px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="sendChatMessage(event)" style="display: flex; gap: 10px; align-items: center;">
+                    <label for="chat-file" style="cursor: pointer; margin: 0; color: var(--gray); font-size: 20px; padding: 10px; background: var(--dark-hover); border-radius: 50%; transition: var(--transition);">
+                        <i class="fas fa-paperclip"></i>
+                    </label>
+                    <input type="file" id="chat-file" accept="image/*" class="hidden" onchange="previewChatAttachment(event)">
+                    <input type="text" id="chat-input-text" placeholder="Ketik pesan..." required style="flex: 1; padding: 14px 18px; border-radius: 20px; background: var(--dark-hover); border: 1px solid var(--dark-border); color: #fff;">
+                    <button type="submit" class="btn btn-primary" style="border-radius: 50%; width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;"><i class="fas fa-paper-plane"></i></button>
+                </form>
             </div>
         </div>
     `;
-    renderChatMsgs();
+    loadChatMessages();
 }
 
-function handleChatScopeChange() {
-    const scope = document.querySelector('input[name="chat-scope"]:checked').value;
-    if (scope === 'private-tech') document.getElementById('tech-recipient-wrapper').classList.remove('hidden'); else document.getElementById('tech-recipient-wrapper').classList.add('hidden');
-    renderChatMsgs();
-}
-
-function handleChatFileUpload(e) {
+function previewChatAttachment(e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(evt) {
-        chatAttachmentsPending = { name: file.name, type: file.type.startsWith('image/') ? 'image' : 'file', data: evt.target.result };
-        const indicator = document.getElementById('chat-attachment-indicator');
-        if (indicator) indicator.textContent = `📎 Terlampir: ${file.name}`;
-        showAlert(`File ${file.name} berhasil dilampirkan siap dikirim.`, 'success');
+        chatAttachmentsPending = evt.target.result;
+        document.getElementById('attachment-img').src = chatAttachmentsPending;
+        document.getElementById('attachment-preview-container').classList.remove('hidden');
+        document.getElementById('chat-input-text').removeAttribute('required');
     };
     reader.readAsDataURL(file);
 }
 
-function renderChatMsgs() {
-    const scopeEl = document.querySelector('input[name="chat-scope"]:checked'), scope = scopeEl ? scopeEl.value : 'all', targetTechId = document.getElementById('chat-target-tech')?.value || '', box = document.getElementById('chat-display');
-    if (!box) return;
+function clearAttachment() {
+    chatAttachmentsPending = null;
+    document.getElementById('chat-file').value = '';
+    document.getElementById('attachment-preview-container').classList.add('hidden');
+    document.getElementById('chat-input-text').setAttribute('required', 'true');
+}
+
+function loadChatMessages() {
+    const container = document.getElementById('chat-messages');
+    if (!container) return;
+    
+    const recipientSel = document.getElementById('chat-recipient');
+    const activeTarget = recipientSel ? recipientSel.value : (currentUser.role === 'admin' ? 'all' : 'admin');
+    
     let msgs = loadData('lgcs_chat');
-    
-    if (scope === 'all') msgs = msgs.filter(m => m.scope === 'all' || !m.scope);
-    else if (scope === 'admin') msgs = msgs.filter(m => m.scope === 'admin' && (m.senderId === currentUser.id || m.recipientId === currentUser.id || currentUser.role === 'admin'));
-    else if (scope === 'private-tech') {
-        if (!targetTechId) return box.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray);">Silakan pilih rekan teknisi tujuan terlebih dahulu untuk melihat chat privat.</div>`;
-        msgs = msgs.filter(m => m.scope === 'private-tech' && ((m.senderId === currentUser.id && m.recipientId === targetTechId) || (m.senderId === targetTechId && m.recipientId === currentUser.id)));
-    }
-    
-    if (msgs.length === 0) return box.innerHTML = `<div style="text-align:center; padding:40px; color:var(--gray);">Belum ada riwayat percakapan pada topik ini.</div>`;
-    box.innerHTML = msgs.map(m => {
-        const isMine = m.senderId === currentUser.id;
-        let attachmentHtml = '';
-        if (m.attachment) {
-            if (m.attachment.type === 'image') attachmentHtml = `<img src="${m.attachment.data}" class="attachment-preview" onclick="window.open('${m.attachment.data}')" title="Klik untuk memperbesar">`;
-            else attachmentHtml = `<a href="${m.attachment.data}" download="${m.attachment.name}" class="file-attachment-box" target="_blank"><i class="fas fa-file-arrow-down"></i><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px;">${m.attachment.name}</span></a>`;
+    let filtered = msgs.filter(m => {
+        if (currentUser.role === 'admin') {
+            if (activeTarget === 'all') return true; 
+            return m.senderId === activeTarget || m.recipientId === activeTarget;
+        } else {
+            return m.senderId === currentUser.id || m.recipientId === currentUser.id || m.recipientId === 'all';
         }
-        return `<div class="chat-msg ${isMine ? 'mine' : 'other'}"><div class="chat-bubble">${m.text ? `<div>${m.text}</div>` : ''}${attachmentHtml}</div><div class="chat-meta"><span>${m.senderName} • ${new Date(m.time).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>${isMine || currentUser.role === 'admin' ? `<button class="chat-delete-btn" onclick="deleteChatMessage('${m.id}')"><i class="fas fa-trash"></i> Hapus</button>` : ''}</div></div>`;
-    }).join('');
-    box.scrollTop = box.scrollHeight;
-}
+    });
 
-function sendChat() {
-    const inp = document.getElementById('chat-input'), text = inp.value.trim(), scope = document.querySelector('input[name="chat-scope"]:checked').value, targetTechId = document.getElementById('chat-target-tech')?.value || '';
-    if (!text && !chatAttachmentsPending) return;
-    if (scope === 'private-tech' && !targetTechId) return showAlert('Pilih rekan teknisi tujuan terlebih dahulu!', 'warning');
-    let msgs = loadData('lgcs_chat');
-    msgs.push({ id: genId(), senderId: currentUser.id, senderName: currentUser.nama, senderRole: currentUser.role, recipientId: scope === 'private-tech' ? targetTechId : (scope === 'admin' ? 'admin' : null), text, scope, attachment: chatAttachmentsPending || null, readByAdmin: currentUser.role === 'admin', readByTech: currentUser.role === 'teknisi', time: new Date().toISOString() });
-    saveData('lgcs_chat', msgs);
-    inp.value = ''; chatAttachmentsPending = null;
-    const indicator = document.getElementById('chat-attachment-indicator');
-    if (indicator) indicator.textContent = '';
-    renderChatMsgs();
-}
-
-function deleteChatMessage(msgId) {
-    if (!confirm('Yakin ingin menghapus pesan ini?')) return;
-    saveData('lgcs_chat', loadData('lgcs_chat').filter(m => m.id !== msgId));
-    renderChatMsgs(); showAlert('Pesan berhasil dihapus.', 'info');
-}
-
-function clearAllChatHistory() {
-    const scope = document.querySelector('input[name="chat-scope"]:checked').value;
-    const targetTechId = document.getElementById('chat-target-tech')?.value || '';
-
-    if (!confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat percakapan pada tampilan ini?')) return;
-    let msgs = loadData('lgcs_chat');
-    
-    if (scope === 'all') {
-        msgs = msgs.filter(m => m.scope !== 'all' && m.scope);
-    } else if (scope === 'admin') {
-        msgs = msgs.filter(m => m.scope !== 'admin' || (m.senderId !== currentUser.id && m.recipientId !== currentUser.id && currentUser.role !== 'admin'));
-    } else if (scope === 'private-tech') {
-        msgs = msgs.filter(m => !(m.scope === 'private-tech' && ((m.senderId === currentUser.id && m.recipientId === targetTechId) || (m.senderId === targetTechId && m.recipientId === currentUser.id))));
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:var(--gray); padding:20px;">Mulai obrolan baru...</div>`;
+        return;
     }
+
+    container.innerHTML = filtered.map(m => {
+        const isMine = m.senderId === currentUser.id;
+        const senderName = isMine ? 'Anda' : (m.senderId === 'admin' ? 'Admin Pusat' : getTechName(m.senderId));
+        const time = new Date(m.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        
+        return `
+            <div class="chat-msg ${isMine ? 'mine' : 'other'}">
+                <div class="chat-sender-name">${senderName}</div>
+                <div class="chat-bubble">
+                    ${m.text}
+                    ${m.attachment ? `<br><img src="${m.attachment}" style="max-width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.2);">` : ''}
+                </div>
+                <div class="chat-meta">
+                    <span>${time}</span>
+                    ${isMine ? `<button class="chat-delete-btn" onclick="deleteMessage('${m.id}')" title="Hapus"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
     
-    saveData('lgcs_chat', msgs);
-    renderChatMsgs();
-    showAlert('Riwayat percakapan berhasil dibersihkan.', 'info');
+    container.scrollTop = container.scrollHeight;
+}
+
+function sendChatMessage(e) {
+    e.preventDefault();
+    const text = document.getElementById('chat-input-text').value.trim();
+    if (!text && !chatAttachmentsPending) return;
+    
+    const recipientSel = document.getElementById('chat-recipient');
+    const recipientId = recipientSel ? recipientSel.value : 'admin';
+    
+    let msgs = loadData('lgcs_chat');
+    msgs.push({
+        id: genId(),
+        senderId: currentUser.id,
+        recipientId: recipientId,
+        text: text,
+        attachment: chatAttachmentsPending,
+        timestamp: new Date().toISOString(),
+        readByAdmin: currentUser.role === 'admin',
+        readByTech: currentUser.role === 'teknisi'
+    });
+    
+    serverData.chat = msgs;
+    saveServerDataCompletely();
+    document.getElementById('chat-input-text').value = '';
+    clearAttachment();
+    loadChatMessages();
+}
+
+function deleteMessage(id) {
+    if(!confirm('Hapus pesan ini?')) return;
+    let msgs = loadData('lgcs_chat');
+    serverData.chat = msgs.filter(m => m.id !== id);
+    saveServerDataCompletely();
+    loadChatMessages();
 }
 </script>
 </body>
